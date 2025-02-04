@@ -1,0 +1,17 @@
+{
+    "name": "hp/lichking",
+    "autoload": {
+        "psr-4": {
+            "Hp\\Lichking\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Nathan amudavi",
+            "email": "nathanamudavi@gmail.com"
+        }
+    ],
+    "require": {
+        "vlucas/phpdotenv": "^5.6"
+    }
+}
