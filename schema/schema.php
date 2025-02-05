@@ -27,10 +27,10 @@ if ($conn->query($sql) === TRUE) {
     die("Error creating database: " . $conn->error);
 }
 //select database
-$conn->select_db(database: $dbname);
+$conn->select_db( $dbname);
 //tables
 //customers
-$Customer ="CREATE TABLE Customers
+$Customers ="CREATE TABLE Customers
 (id INT(6)UNSIGNED AUTO_INCREMENT PRIMARY KEY,
 first_name VARCHAR(30) NOT NULL,
 second_name VARCHAR(30) NOT NULL,
@@ -39,7 +39,7 @@ password VARCHAR(50) NOT NULL,
 email VARCHAR(50) NOT NULL,
 reg_date TIMESTAMP DEFAULT CURRENT_TIME ON UPDATE CURRENT_TIMESTAMP";
 //admin
-$admin = "CREATE TABLE Admin_user
+$admin = "CREATE TABLE Admin_users
 (id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
 first_name VARCHAR(30) NOT NULL,
 second_name VARCHAR(30) NOT NULL,

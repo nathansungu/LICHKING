@@ -96,8 +96,8 @@ const Orders = sequelize.define("Orders", {
 });
 // order items
 const Order_items = sequelize.define("Order_items",{
-    OrderId: { type: DataTypes.INTEGER.UNSIGNED, allowNull: false, field: 'order_id' },
-    Product_id: { type: DataTypes.INTEGER.UNSIGNED, allowNull: false },
+    orderId: { type: DataTypes.INTEGER.UNSIGNED, allowNull: false, field: 'order_id' },
+    product_id: { type: DataTypes.INTEGER.UNSIGNED, allowNull: false },
     price: { type: DataTypes.FLOAT, allowNull: false },
     quantity: { type: DataTypes.INTEGER.UNSIGNED, allowNull: false }
 });
@@ -113,7 +113,7 @@ Customer.hasMany(Orders, { foreignKey: 'customer_id' });
 Orders.belongsTo(Customer, { foreignKey: 'customer_id' });
 
 Product.belongsTo(Company, { foreignKey: 'company_id' });
-Company.hasMany(Books, { foreignKey: 'company_id' });
+Company.hasMany(Product, { foreignKey: 'company_id' });
 
 Orders.hasMany(Order_items, { foreignkey: 'OrderId' });
 Order_items.belongsTo(Orders, { foreignKey: 'OrderId'});
@@ -126,12 +126,12 @@ Product.belongsTo(Category, { foreignKey: 'category_id' });
 
 // export modules
 module.exports = {  
-    Customer,
-    Admin,
-    Product,
-    Company,
-    Orders,
-    Order_items,
-    Category
+  Customer,
+  Admin,
+  Product,
+  Company,
+  Orders,
+  Order_items,
+  Category
 }
   
