@@ -22,7 +22,9 @@ app.listen(port, () => {
 
 // Models are already imported above
 //import models
-const {Customer,Admin,Books,Authors,Orders, Order_items } =require("../models/model");
+const {Customer,Admin, Products, Company,Orders, Order_items, Category } =require("../models/models");
+const crypto = require('crypto');
+const nodemailer = require('nodemailer');
 
 //customer registration
 router.post("/register/customer", async (req, res, next) => {
@@ -105,8 +107,9 @@ router.post("/login", async (req, res, next) => {
         next(error);
     }
 });
-// forgot password
-router.post("/forgot-password", async (req, res, next) => {
+//forgot password
+// Generate a password reset token
+router.post('/password reset', async (req, res, next) => {
     try {
         const { email } = req.body;
         if (!email) {
@@ -114,39 +117,90 @@ router.post("/forgot-password", async (req, res, next) => {
         }
 
         // Check if the user is a customer
-        let user = await Customer.findOne({ where: { email: email} });
-        if (user) {
-            return res.json({ message: "Password reset link sent to your email" });
+        let user = await Customer.findOne({ where: { email } });
+        if (!user) {
+            // Check if the user is an admin
+            user = await Admin.findOne({ where: { email } });
+            if (!user) {
+                return res.status(404).json({ message: "User not found" });
+            }
         }
 
-        // Check if the user is an admin
-        user = await Admin.findOne({ where: { email: email } });
-        if (user) {
-            // send password reset link to the email
-            const resetLink = `http://example.com/reset-password?email=${encodeURIComponent(email)}`;
-            // Here you would typically send the reset link via email using a service like nodemailer
-            console.log(`Password reset link: ${resetLink}`);
-            
-            return res.json({ message: "Password reset link sent to your email" });
-        }
+        // Generate a reset token
+        const resetToken = crypto.randomBytes(32).toString('hex');
+        const resetTokenExpires = Date.now() + 30 * 60 * 1000; // 30 minutes from now
 
-        return res.status(404).json({ message: "User not found" });
+        // Save the reset token and expiration to the user
+        user.resetToken = resetToken;
+        user.resetTokenExpires = resetTokenExpires;
+        await user.save();
+
+        // Send the reset token via email
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: 'your-email@gmail.com',
+                pass: 'your-email-password'
+            }
+        });
+
+        const mailOptions = {
+            from: 'your-email@gmail.com',
+            to: email,
+            subject: 'Password Reset',
+            text: `You requested a password reset. Click the link to reset your password: http://example.com/reset-password?token=${resetToken}`
+        };
+
+        await transporter.sendMail(mailOptions);
+
+        res.status(200).json({ message: "Password reset link sent to your email" });
     } catch (error) {
         next(error);
     }
 });
 
-//add a book
-router.post("/books/add", async (req, res, next)=>{
+// Reset password using the token
+router.post('/reset-password', async (req, res, next) => {
     try {
-        const{title, author_id,publish_year,price,stock,}=req.body;
-        if (!title|| !author_id|| !publish_year|| !price|| !stock) {
+        const { token, newPassword } = req.body;
+        if (!token || !newPassword) {
+            return res.status(400).json({ message: "Token and new password are required" });
+        }
+
+        // Find the user by reset token and check if the token is still valid
+        let user = await Customer.findOne({ where: { resetToken: token, resetTokenExpires: { [Sequelize.Op.gt]: Date.now() } } });
+        if (!user) {
+            user = await Admin.findOne({ where: { resetToken: token, resetTokenExpires: { [Sequelize.Op.gt]: Date.now() } } });
+            if (!user) {
+                return res.status(400).json({ message: "Invalid or expired token" });
+            }
+        }
+
+        // Update the user's password
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        user.password = hashedPassword;
+        user.resetToken = null;
+        user.resetTokenExpires = null;
+        await user.save();
+
+        res.status(200).json({ message: "Password reset successfully" });
+    } catch (error) {
+        next(error);
+    }
+});
+
+
+//add a book
+router.post("/product/add", async (req, res, next)=>{
+    try {
+        const{name, company_id, price, stock,}=req.body;
+        if (!name|| !company_id || !price|| !stock) {
             return res.status(400).json({message: "provide all the details"})
         }
-        const newBook = await Books.create({ title, author_id,publish_year,price,stock });
+        const newProduct = await Books.create({ name, company_id, price,stock });
         res.status(201).json({
-            message: "Book created successfully",
-            product: newBook
+            message: "Product added successfully",
+            product: newProduct
         });
     } catch (error) {
         next(error);
@@ -154,39 +208,38 @@ router.post("/books/add", async (req, res, next)=>{
 });
 
 //Get all books
-router.get("/books", async (req, res, next) => {
+router.get("/product", async (req, res, next) => {
     try {
-        const books = await Books.findAll({
-            attributes: ['title', 'price', 'stock'],
+        const products = await Books.findAll({
+            attributes: ['name', 'price', 'stock'],
             include: [{
-                model: Authors,
-                attributes: ['first_name', 'second_name', 'bio']
+                model: Company,
+                attributes: ['name']
             }]
         });
-        if(!books) {
-            return res.status(404).json({message: 'No books found'});
+        if(!product) {
+            return res.status(404).json({message: 'No products found'});
         }
-        return res.status(201).json({message: books});
+        return res.status(201).json({message: products});
     } catch (error) {
         next(error);
     }
 });
 
 ///update a book
-router.put("/book/update", async(req,res) =>{
-    const{title, author_id,publish_year,price,stock}=req.body
+router.put("/product/update", async(req,res) =>{
+    const{name, company_id,price,stock}=req.body
     try {
-        const searchBook = await Books.findOne({where: {title}});
-        if (!searchBook) {
-            return res.status(400).send("Invalid book");
+        const searchProduct = await Books.findOne({where: {name}});
+        if (!searchProduct) {
+            return res.status(400).send("Invalid product");
         }
-        searchBook.title = title;
-        searchBook.author_id=author_id;
-        searchBook.publish_year =publish_year;
-        searchBook.price = price;
-        searchBook.stock =stock;
+        searchProduct.name = title;
+        searchProduct.company_id_id=company_id;
+        searchProduct.price = price;
+        searchProduct.stock =stock;
 
-        await searchBook.save();
+        await searchProduct.save();
         return res.status(200).send("product updated successfully");
     } catch (error) {
         console.error("Error updating product:", error);
@@ -194,18 +247,18 @@ router.put("/book/update", async(req,res) =>{
     }
 });
 // delete product path
-router.delete("/book/delete", async(req, res) =>{
-    const{ title}=req.body;
+router.delete("/product/delete", async(req, res) =>{
+    const{ name}=req.body;
     try {
-        if (!title) {
+        if (!name) {
             return res.status(400).json({message: "Enter the booktitle"})        
         }
-        const getBook = await Books.findOne({where: {title}});
-        if (!getBook) {
-            return res.status(400).send("Invalid book")        
+        const getproduct = await Products.findOne({where: {name}});
+        if (!getproduct) {
+            return res.status(400).send("Invalid product")        
         }
-        await Books.destroy({ where: { title } });
-            return res.status(200).json({message: "Book deleted"});        
+        await Products.destroy({ where: { name } });
+            return res.status(200).json({message: "product deleted"});        
     } catch (error) {
         return res.status(500).json({message: "Error occurred while deleting the product"});
     }
@@ -213,36 +266,36 @@ router.delete("/book/delete", async(req, res) =>{
 });
 //add books to cart
 router.post('/product/addtocart', async(req, res)=>{
-    const { customer_id, book_id, quantity } = req.body;
+    const { customer_id, product_id, quantity } = req.body;
     try {
         //check if book id exists
-        const book = await Books.findByPk(book_id);
-        if (!book){
-            return res.status(400).json({ message: "Book not found" });
+        const product = await Products.findByPk(product_id);
+        if (!product){
+            return res.status(400).json({ message: "Invalid product" });
         }
         //find or create a pending order for the user
         let order = await Orders.findOne({ where: { customer_id: customer_id, status: 'pending' } });
         if (order) {
             //check items table for the same item update the quantity
-            let samebook = await Order_items.findOne({ where: { book_id: book_id, id: order.id } });
-            if (samebook) {
-            samebook.quantity += quantity;
-            await samebook.save();
+            let sameproduct = await Order_items.findOne({ where: { product_id: product_id, id: order.id } });
+            if (sameproduct) {
+            sameproduct.quantity += quantity;
+            await sameproduct.save();
             } else{
                 // create a new order item if the book is not in the cart
-                await Order_items.create({ OrderId: order.id, book_id, quantity, price: book.price});
+                await Order_items.create({ OrderId: order.id, product_id, quantity, price: product.price});
             }
         } else {
             //create a new pending order if none exist
             //
             order = await Orders.create({ customer_id: customer_id, total_amount: 0, status: 'pending', delivery_status: 'pending' });
-            await Order_items.create({OrderId: order.id, book_id, quantity, price: book.price });
+            await Order_items.create({OrderId: order.id, product_id, quantity, price: product.price });
         }
        
         // Recalculate the total amount by multiplying the quantity with the price
         const itemsquantity = await Order_items.findOne({where: { order_id: order.id}});
         
-        const total_amount = itemsquantity.quantity * book.price;
+        const total_amount = itemsquantity.quantity *product.price;
         order.total_amount = total_amount;
         await order.save();
 
@@ -268,12 +321,12 @@ router.get('/cart', async (req, res) => {
                 attributes: ['id', 'order_id','price', 'quantity'],
                 include: [
                 {
-                    model: Books,
-                    attributes: ['id', 'title'],
+                    model: Products,
+                    attributes: ['id', 'name'],
                     include: [
                     {
-                        model: Authors,
-                        attributes: ['id', 'first_name', 'second_name', 'bio'],
+                        model: Company,
+                        attributes: ['id', 'name'],
                     },
                     ],
                 },
@@ -307,12 +360,12 @@ router.post('/placeorder', async (req, res) => {
         model: Order_items,
         include: [
           {
-            model: Books,
-            attributes: ['id', 'title', 'price', 'stock'],
+            model: Products,
+            attributes: ['id', 'name', 'price', 'stock'],
             include: [
             {
-              model: Authors,
-              attributes: ['id', 'first_name', 'second_name', 'bio'],
+              model: Company,
+              attributes: ['id', 'name'],
             },
             ],
           },
@@ -329,7 +382,7 @@ router.post('/placeorder', async (req, res) => {
   
       // reduce product stock quantities
       for (const item of order.Order_items) {
-        const stock = await Books.findByPk(item.book_id);
+        const stock = await Products.findByPk(item.product_id);
         if (stock) {
           stock.stock -= item.quantity;
           await stock.save();
@@ -462,35 +515,35 @@ router.get('/admins', async ( req,res) => {
         res.status(500).send('Something went wrong');
     }
 });
-// path to add authors
-router.post('/authors/add', async (req, res) => {
-    const { first_name, second_name, bio } = req.body;
+// path to add company
+router.post('/company/add', async (req, res) => {
+    const { name , location , phone_no, email } = req.body;
 
     try {
-        if (!first_name || !second_name || !bio) {
+        if (!name ) {
             return res.status(400).json({ message: 'All fields are required' });
                       
         }
          //check if the author already exists
-         const author = await Authors.findOne({ where: { first_name, second_name } });
-            if (author) {
-                return res.status(400).json({ message: 'Author already exists' });
+         const company = await Company.findOne({ where: { name } });
+            if (company) {
+                return res.status(400).json({ message: 'Company already exists' });
                 
             };
-            const newauthor = await Authors.create({ first_name, second_name, bio });
-                res.status(201).json({ message: 'Author added successfully', author: newauthor })
+            const newcompany= await Company.create({  name , location , phone_no, email  });
+                res.status(201).json({ message: 'company added successfully', Company: newcompany })
     } catch (error) {
         console.error(error);
         res.status(500).send('Something went wrong');
     }
 });
-//get all authors
-router.get('/authors', async (req, res) => {
+//get all company
+router.get('/company', async (req, res) => {
     try {
-        const authors = await Authors.findAll();
-        if (!authors) return res.status(404).json({ message: 'No authors found' });
+        const company = await Company.findAll();
+        if (!company) return res.status(404).json({ message: 'No company found' });
 
-        res.status(200).json({ authors });
+        res.status(200).json({ company });
     } catch (error) {
         console.error(error);
         res.status(500).send('Something went wrong');

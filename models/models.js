@@ -72,10 +72,9 @@ const Admin = sequelize.define("Admin_users", {
 });
 
 // products model
-const Product = sequelize.define("Products", {
+const Products = sequelize.define("Products", {
     name: { type: DataTypes.STRING(20), allowNull: false },
     company_id: { type: DataTypes.INTEGER(6), allowNull: false },
-    publish_year: { type: DataTypes.DATE, allowNull: false },
     price: { type: DataTypes.FLOAT, allowNull: false },
     stock: { type: DataTypes.INTEGER, allowNull: false },
 });
@@ -128,7 +127,7 @@ Product.belongsTo(Category, { foreignKey: 'category_id' });
 module.exports = {  
   Customer,
   Admin,
-  Product,
+  Products,
   Company,
   Orders,
   Order_items,
