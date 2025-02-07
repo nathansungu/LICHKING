@@ -549,6 +549,18 @@ router.get('/company', async (req, res) => {
         res.status(500).send('Something went wrong');
     }
 });
+//get all categories
+router.get('/category', async (req, res) =>{
+    try {
+        const category = await Category.findAll();
+        if (!category) return res.status(404).json({message: 'No category found'});
+
+        res.status(200).json({category});
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Something went wrong');
+    }
+});
 
 
 //export routers
