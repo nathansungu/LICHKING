@@ -1,10 +1,12 @@
+const { router } = require('./api/api.js');
+
 function login() {
     document.getElementById("loginform").addEventListener("submit", async (event) =>{
         event.preventDefault();
 
         var email = document.getElementById("email").value;
         var password = document.getElementById("password").value;
-        fetch('/login',{
+        fetch('http://localhost:3000/login',{
             method: 'POST',
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify({ email,password })
@@ -35,7 +37,7 @@ function register() {
         var phone_no = document.getElementById("phone_no").value;
         var email = document.getElementById("email").value;
         var password = document.getElementById("password").value;
-        fetch('/register',{
+        fetch('http://localhost:3000/register',{
             method: 'POST',
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify({ first_name, second_name, phone_no, email,password, confirmPassword})
