@@ -10,10 +10,14 @@ app.use(sessionconfig);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 const router =express.Router();
-
 //initialize port number
 const port = process.env.PORT || 3000;
 //set the port usage
+
+//import cors
+const cors = require('cors');
+// Enable CORS for all origins
+app.use(cors());
 app.use(router);
 
 app.listen(port, () => {
@@ -190,7 +194,7 @@ router.post('/reset-password', async (req, res, next) => {
 });
 
 
-//add a book
+//add a product
 router.post("/product/add", async (req, res, next)=>{
     try {
         const{name, company_id, price, stock,}=req.body;
@@ -207,7 +211,7 @@ router.post("/product/add", async (req, res, next)=>{
     }
 });
 
-//Get all books
+//Get all products
 router.get("/product", async (req, res, next) => {
     try {
         const products = await Books.findAll({
@@ -251,7 +255,7 @@ router.delete("/product/delete", async(req, res) =>{
     const{ name}=req.body;
     try {
         if (!name) {
-            return res.status(400).json({message: "Enter the booktitle"})        
+            return res.status(400).json({message: "Enter the product name"})        
         }
         const getproduct = await Products.findOne({where: {name}});
         if (!getproduct) {

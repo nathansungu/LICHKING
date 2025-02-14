@@ -1,6 +1,6 @@
-const { router } = require('./api/api.js');
+// const api = require('../api/api.js'); // Removed unused import
 
-function login() {
+export function login() {
     document.getElementById("loginform").addEventListener("submit", async (event) =>{
         event.preventDefault();
 
@@ -19,16 +19,17 @@ function login() {
                 } else if (data.role === "customer") {
                     window.location.href = "/customer/profile"; // Redirect to customer page
                 }
+                register();
             } else {
                 alert(data.message); // Display error message
-                console.error("Error:", error);
+                console.error("Error:", data);
             }
         })
         .catch(error => console.error('Error:', error));
     });
-};
+}
 
-function register() {
+export function register() {
     document.getElementById("register_form").addEventListener("submit", async (event) =>{
         event.preventDefault();
 
@@ -36,11 +37,12 @@ function register() {
         var second_name = document.getElementById("second_name").value;
         var phone_no = document.getElementById("phone_no").value;
         var email = document.getElementById("email").value;
-        var password = document.getElementById("password").value;
+        var password = document.getElementById("password").value;        
+        var confirmPassword = document.getElementById("confirmPassword").value;
         fetch('http://localhost:3000/register',{
             method: 'POST',
             headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({ first_name, second_name, phone_no, email,password, confirmPassword})
+            body: JSON.stringify({ first_name, second_name, phone_no, email, password, confirmPassword})
         })
         .then(response => response.json())
         .then(data => {
@@ -48,7 +50,7 @@ function register() {
                 alert(data.message);
             } else {
                 alert(data.message); // Display error message
-                console.error("Error:", error);
+                console.error("Error:", data);
             }
         })
         .catch(error => console.error('Error:', error));

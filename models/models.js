@@ -111,17 +111,17 @@ const Category = sequelize.define("Category",{
 Customer.hasMany(Orders, { foreignKey: 'customer_id' });
 Orders.belongsTo(Customer, { foreignKey: 'customer_id' });
 
-Product.belongsTo(Company, { foreignKey: 'company_id' });
-Company.hasMany(Product, { foreignKey: 'company_id' });
+Products.belongsTo(Company, { foreignKey: 'company_id' });
+Company.hasMany(Products, { foreignKey: 'company_id' });
 
 Orders.hasMany(Order_items, { foreignkey: 'OrderId' });
 Order_items.belongsTo(Orders, { foreignKey: 'OrderId'});
 
-Order_items.belongsTo(Product, { foreignKey: 'product_id' });
-Product.hasMany(Order_items, { foreignKey: 'product_id' });
+Order_items.belongsTo(Products, { foreignKey: 'product_id' });
+Products.hasMany(Order_items, { foreignKey: 'product_id' });
 
-Category.hasMany(Product, { foreignKey: 'category_id' });
-Product.belongsTo(Category, { foreignKey: 'category_id' });
+Category.hasMany(Products, { foreignKey: 'category_id' });
+Products.belongsTo(Category, { foreignKey: 'category_id' });
 
 // export modules
 module.exports = {  
