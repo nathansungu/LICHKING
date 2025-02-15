@@ -197,15 +197,22 @@ router.post('/reset-password', async (req, res, next) => {
 //add a product
 router.post("/product/add", async (req, res, next)=>{
     try {
-        const{name, company_id, price, stock,}=req.body;
-        if (!name|| !company_id || !price|| !stock) {
+        const{name, company_id, category_id, price, stock,}=req.body;
+        if (!name|| !company_id || !category_id|| !price|| !stock) {
             return res.status(400).json({message: "provide all the details"})
         }
-        const newProduct = await Books.create({ name, company_id, price,stock });
-        res.status(201).json({
+        const checksimillarproduct = await Products.findOne({where: {name}});   
+        if (checksimillarproduct) {
+            return res.status(400).json({message: "Product already exists"})
+            
+        }else{
+            const newProduct = await Products.create({ name, company_id, category_id, price,stock });
+            res.status(201).json({
             message: "Product added successfully",
             product: newProduct
         });
+        }
+        
     } catch (error) {
         next(error);
     }
@@ -214,7 +221,7 @@ router.post("/product/add", async (req, res, next)=>{
 //Get all products
 router.get("/product", async (req, res, next) => {
     try {
-        const products = await Books.findAll({
+        const products = await Products.findAll({
             attributes: ['name', 'price', 'stock'],
             include: [{
                 model: Company,
@@ -553,6 +560,27 @@ router.get('/company', async (req, res) => {
         res.status(500).send('Something went wrong');
     }
 });
+//add category
+router.post('/category/add', async (req, res) =>{
+    const{name, description}=req.body;
+    if (!name) {
+        return res.send(400).json({message: "Enter category name"})
+        
+    }
+    try {
+        const checkduplicate = await Category.findOne({where: {name}});
+        if (checkduplicate) {
+            return res.status(400).json({message: "Category already exists"})
+        }else{
+            const newCategory = await Category.create({name, description});
+            res.status(201).json({message: "Category added successfully", category: newCategory});
+        }
+
+    } catch (error) {
+        res.status(500).send('Something went wrong');
+        
+    }
+})
 //get all categories
 router.get('/category', async (req, res) =>{
     try {

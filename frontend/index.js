@@ -1,35 +1,37 @@
-// const api = require('../api/api.js'); // Removed unused import
+//run ..api/api.js
+const { response } = require("express");
+const router  = require("../api/api.js");
 
-export function login() {
+function login() {
     document.getElementById("loginform").addEventListener("submit", async (event) =>{
         event.preventDefault();
 
         var email = document.getElementById("email").value;
         var password = document.getElementById("password").value;
-        fetch('http://localhost:3000/login',{
+        fetch('http://localhost:3000/login', {
             method: 'POST',
             headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({ email,password })
+            body: JSON.stringify({ email, password })
         })
-        .then(response => response.json())
+        .then(res => res.json())
         .then(data => {
             if (response.ok) {
-                if (data.role === "admin") {
-                    window.location.href = "/admin/dashboard"; // Redirect to admin page
-                } else if (data.role === "customer") {
-                    window.location.href = "/customer/profile"; // Redirect to customer page
-                }
-                register();
+            if (data.role === "admin") {
+                window.location.href = "/admin/dashboard"; // Redirect to admin page
+            } else if (data.role === "customer") {
+                window.location.href = "/customer/profile"; // Redirect to customer page
+            }
+            register();
             } else {
-                alert(data.message); // Display error message
-                console.error("Error:", data);
+            alert(data.message); // Display error message
+            console.error("Error:", data);
             }
         })
         .catch(error => console.error('Error:', error));
     });
 }
 
-export function register() {
+function register() {
     document.getElementById("register_form").addEventListener("submit", async (event) =>{
         event.preventDefault();
 
