@@ -237,16 +237,17 @@ router.get("/product", async (req, res, next) => {
     }
 });
 
-///update a book
+///update a product
 router.put("/product/update", async(req,res) =>{
-    const{name, company_id,price,stock}=req.body
+    const{name, company_id,category_id, price,stock}=req.body
     try {
         const searchProduct = await Books.findOne({where: {name}});
         if (!searchProduct) {
             return res.status(400).send("Invalid product");
         }
         searchProduct.name = title;
-        searchProduct.company_id_id=company_id;
+        searchProduct.company_id=company_id;
+        searchProduct.category_id=category_id;
         searchProduct.price = price;
         searchProduct.stock =stock;
 

@@ -68,7 +68,7 @@ function register() {
         .then(response => response.json().then(data => ({ status: response.ok, data })))
         .then(({ status, data }) => {
             if (status) {
-                showNotification("Registration successful! You can now log in.", "reg_notification");
+                showNotification(data.message, "reg_notification");
             } else {
                 showNotification(data.message, "reg_notification");
                 console.error("Error:", data);
@@ -142,6 +142,154 @@ function displayProducts(products) {
 
 //automaticaly load products 
 fetchproducts();
+
+//add products
+function addproducts() {
+    const name = document.getElementById("name").value;
+    const company_id = document.getElementById("company_id").value;
+    const category_id = document.getElementById("category_id").value;
+    const price = document.getElementById("price").value;
+    const stock = document.getElementById("stock").value;
+
+    fetch('http://localhost:3000/product/add', {
+        method: 'POST',
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, company_id, category_id, price, stock })
+    })
+    .then(response => response.json())
+    .then(data => ({ status: response.ok, data }))
+    .then(({ status, data }) => {
+        if (status) {
+            showNotification( data.message, "admin_notification");
+        } else {
+            showNotification(data.message, "admin_notification");
+            console.error("Error:", data);
+        }
+    })
+}
+//update product
+function updateproducts() {
+    const name = document.getElementById("name").value;
+    const company_id = document.getElementById("company_id").value;
+    const category_id = document.getElementById("category_id").value;
+    const price = document.getElementById("price").value;
+    const stock = document.getElementById("stock").value;
+
+    fetch('http://localhost:3000/product/update', {
+        method: 'PUT',
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, company_id, category_id, price, stock })
+    })
+    .then (response => response.json())
+    .then(data => ({ status: response.ok, data }))
+    .then(({ status, data }) => {
+        if (status) {
+            showNotification(data.message, "admin_notification");
+        } else {
+            showNotification(data.message, "admin_notification");
+            console.error("Error:", data);
+        }
+    })
+}
+// delete product
+function deleteproduct(){
+    const name = document.getElementById("name").value;
+    fetch('http://localhost:3000/product/delete', {
+        method: 'DELETE',
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name })
+    })
+    .then(response => response.json())
+    .then(data => ({ status: response.ok, data }))
+    .then(({ status, data }) => {
+        if (status) {
+            showNotification(data.message, "admin_notification");
+        } else {
+            showNotification(data.message, "admin_notification");
+            console.error("Error:", data);
+        }
+    })
+}
+
+//add product to cart
+function addtocart() { 
+    const customer_id = sessionStorage.getItem("customer_id");
+    const product_id = document.getElementById("product_id").value;
+    const quantity = document.getElementById("quantity").value;
+    fetch('http://localhost:3000/product/addtocart', {
+        method: 'POST',
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ customer_id, product_id, quantity })
+    })
+    .then(response => response.json())
+    .then(data => ({ status: response.ok, data }))
+    .then(({ status, data }) => {
+        if (status) {
+            showNotification(data.message, "cart_notification");
+        } else {
+            showNotification(data.message, "cart_notification");
+            console.error("Error:", data);
+        }
+    })
+}
+//view cart
+function viewcart() {
+    const customer_id = sessionStorage.getItem("customer_id");
+    fetch('http://localhost:3000/cart', {
+        method: 'GET',
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ customer_id })
+    })
+    .then(response => response.json())
+    .then(data => ({ status: response.ok, data }))
+    .then(({ status, data }) => {
+        if (status) {
+            showNotification(data.message, "cart_notification");
+        } else {
+            showNotification(data.message, "cart_notification");
+            console.error("Error:", data);
+        }
+    })
+}
+//place order
+function placeorder() {
+    const customer_id = sessionStorage.getItem("customer_id");
+    fetch('http://localhost:3000/order', {
+        method: 'POST',
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ customer_id })
+    })
+    .then(response => response.json())
+    .then(data => ({ status: response.ok, data }))
+    .then(({ status, data }) => {
+        if (status) {
+            showNotification(data.message, "cart_notification");
+        } else {
+            showNotification(data.message, "cart_notification");
+            console.error("Error:", data);
+        }
+    })
+}
+// cancel order
+//admin
+function cancelorder() {
+    const order_id = document.getElementById("order_id").value;
+    fetch('http://localhost:3000/order/cancel', {
+        method: 'DELETE',
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ order_id })
+    })
+    .then(response => response.json())
+    .then(data => ({ status: response.ok, data }))
+    .then(({ status, data }) => {
+        if (status) {
+            showNotification(data.message, "admin_notification");
+        } else {
+            showNotification(data.message, "admin_notification");
+            console.error("Error:", data);
+        }
+    })
+}
 
 function showNotification(message, id ) {
     const notification = document.getElementById(id);
