@@ -4,42 +4,53 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
     <style>
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
             margin: 0;
             padding: 0;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            block-size: 100vh;
+            flex-direction: column;
+            animation: fadeIn 1s ease-in-out;
         }
 
         .container {
             background-color: #fff;
             padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            max-width: 400px;
-            width: 100%;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            max-inline-size: 400px;
+            inline-size: 100%;
+            animation: fadeIn 1.5s ease-in-out;
         }
 
         h2 {
-            margin-bottom: 20px;
+            margin-block-end: 20px;
             color: #333;
+            text-align: center;
         }
 
         .form-group {
-            margin-bottom: 15px;
+            margin-block-end: 15px;
+            position: relative;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 5px;
+            margin-block-end: 5px;
             color: #555;
         }
 
@@ -48,6 +59,24 @@
             padding: 10px;
             border: 1px solid #ccc;
             border-radius: 4px;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            border-color: #007bff;
+        }
+
+        .form-group .toggle-password {
+            position: absolute;
+            inset-inline-end: 10px;
+            inset-block-start: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            color: #007bff;
         }
 
         button {
@@ -59,13 +88,28 @@
             color: #fff;
             font-size: 16px;
             cursor: pointer;
+            transition: background-color 0.3s;
         }
 
         button:hover {
             background-color: #218838;
         }
+        .notification {
+            
+            margin-block-start: 15px;
+            padding: 10px;
+            border-radius: 4px;
+            text-decoration-color: red;
+            color: #721c24;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            animation: fadeIn 1.5s ease-in-out;
+        }
 
-        @media (max-width: 600px) {
+        @media (max-inline-size: 600px) {
             .container {
                 padding: 15px;
             }
@@ -80,35 +124,40 @@
             }
         }
     </style>
-    <div class="container">
+</head>
+<script src="index.js" defer></script>
+<body>
+    <div class="container"></div>
         <h2>Register</h2>
         <form id="register_form">
-            <div class="form-group">
-            <label for="first_name">First Name:</label>
-            <input type="text" id="first_name" name="first_name" required>
+            <div class="form-group"></div>
+                <label for="first_name">First Name:</label>
+                <input type="text" id="first_name" name="first_name" required>
             </div>
             <div class="form-group">
-            <label for="second_name">Second Name:</label>
-            <input type="text" id="second_name" name="second_name" required>
+                <label for="second_name">Second Name:</label>
+                <input type="text" id="second_name" name="second_name" required>
+            </div>
+            <div class="form-group"></div>
+                <label for="phone_no">Phone Number:</label>
+                <input type="tel" id="phone_no" name="phone_no" required>
             </div>
             <div class="form-group">
-            <label for="phone_no">Phone Number:</label>
-            <input type="tel" id="phone_no" name="phone_no" required>
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
             </div>
             <div class="form-group">
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email" required>
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+                <button type="button" class="toggle-password" onclick="togglePasswordVisibility('password')">Show</button>
             </div>
             <div class="form-group">
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required>
+                <label for="confirm_password">Confirm Password:</label>
+                <input type="password" id="confirm_password" name="confirm_password" required>
+                <button type="button" class="toggle-password" onclick="togglePasswordVisibility('confirm_password')">Show</button>
             </div>
-            <div class="form-group">
-            <label for="confirm_password">Confirm Password:</label>
-            <input type="password" id="confirm_password" name="confirm_password" required>
-            </div>
-            <button type="submit" onclick=register()>Register</button>
-        </form>
+            <div id="reg_notification" class="notification" style="display: none;"></div>
+            <button type="submit" onclick="register()">Register</button>
         </form>
     </div>
 </body>

@@ -73,17 +73,18 @@ const Admin = sequelize.define("Admin_users", {
 
 // products model
 const Products = sequelize.define("Products", {
-    name: { type: DataTypes.STRING(20), allowNull: false },
+    name: { type: DataTypes.STRING(20), allowNull: false, unique: true },
     company_id: { type: DataTypes.INTEGER(6), allowNull: false },
+    category_id: { type: DataTypes.INTEGER(6), allowNull: false },
     price: { type: DataTypes.FLOAT, allowNull: false },
     stock: { type: DataTypes.INTEGER, allowNull: false },
 });
 // company model
 const Company = sequelize.define("Company", {
     name: { type: DataTypes.STRING(20), allowNull: false },
-    location: { type: DataTypes.STRING(20), allowNull: false },
-    phone_no: { type: DataTypes.STRING(14), allowNull: false, unique:true },
-    email: { type: DataTypes.STRING(50), allowNull: false, unique:true }
+    location: { type: DataTypes.STRING(20), allowNull: true},
+    phone_no: { type: DataTypes.STRING(14), allowNull: true, unique:true },
+    email: { type: DataTypes.STRING(50), allowNull: true, unique:true }
 });
 // orders model
 const Orders = sequelize.define("Orders", {
