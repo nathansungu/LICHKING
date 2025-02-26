@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LINCHKING</title>
+</head>
+<body>
+    <div>ADMIN WINDOW</div>
+    <div class="product_container"></div>
+    <div class="addproucts">
+        <form action="addproducts.php" method="post">
+            <input type="text" id="name" placeholder="Name">
+            <input type="text" id="image" placeholder="Product Image">
+            <select id="company_id">
+                <option value="">Select Company</option>
+            </select>
+            <script>
+                fetch('https://api.example.com/fetchcompany')
+                    .then(response => response.json())
+                    .then(data => {
+                        const select = document.querySelector('select[name="companyid"]');
+                        data.forEach(company => {
+                            const option = document.createElement('option');
+                            option.value = company.id;
+                            option.textContent = company.name;
+                            select.appendChild(option);
+                        });
+                    })
+                    .catch(error => console.error('Error fetching companies:', error));
+            </script>
+            <select id="category_id">
+                <option value="">Select Category</option>
+            </select>
+            <script>
+                fetch('http://localhost:3000/category')
+                    .then(response => response.json())
+                    .then(data => {
+                        const select = document.querySelector('select[name="category_id"]');
+                        data.forEach(category => {
+                            const option = document.createElement('option');
+                            option.value = category.id;
+                            option.textContent = category.name;
+                            select.appendChild(option);
+                        });
+                    })
+                    .catch(error => console.error('Error fetching categories:', error));
+            </script></select>
+            <input type="text" id="price" placeholder="price">
+            <input type="text" id="product_description" placeholder="Product Description">
+            
+            <input type="submit" value="Add Product">
+        </form>
+    </div>
+
+    
+</body>
+</html>
