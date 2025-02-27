@@ -52,6 +52,30 @@
             <input type="submit" value="Add Product">
         </form>
     </div>
+    
+    <div class="deleteproducts">
+        <form id="deleteProductForm"></form>
+            <input type="text" id="product_id" name="product_id" placeholder="Product ID">
+            <input type="submit" value="Delete Product">
+        </form>
+        <script>
+            document.getElementById('deleteProductForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+                const productId = document.getElementById('product_id').value;
+                fetch(`https://api.example.com/deleteproduct/${productId}`, {
+                    method: 'DELETE'
+                })
+                .then(response => {
+                    if (response.ok) {
+                        alert('Product deleted successfully');
+                    } else {
+                        alert('Failed to delete product');
+                    }
+                })
+                .catch(error => console.error('Error deleting product:', error));
+            });
+        </script>
+    </div>
 
     
 </body>
