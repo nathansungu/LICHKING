@@ -74,6 +74,8 @@ const Admin = sequelize.define("Admin_users", {
 // products model
 const Products = sequelize.define("Products", {
     name: { type: DataTypes.STRING(20), allowNull: false, unique: true },
+    image:{type:DataTypes.STRING(255), allowNull:true},
+    description: { type: DataTypes.STRING(255), allowNull: false},
     company_id: { type: DataTypes.INTEGER(6), allowNull: false },
     category_id: { type: DataTypes.INTEGER(6), allowNull: false },
     price: { type: DataTypes.FLOAT, allowNull: false },
