@@ -6,75 +6,76 @@
     <title>LINCHKING</title>
 </head>
 <body>
+    <!-- Import index.js file -->
+    <script src="index.js"></script>
+    
     <div>ADMIN WINDOW</div>
     <div class="product_container"></div>
     <div class="addproucts">
-        <form action="addproducts.php" method="post">
+        <form id="addProductForm"></form>
             <input type="text" id="name" placeholder="Name">
             <input type="text" id="image" placeholder="Product Image">
             <select id="company_id">
                 <option value="">Select Company</option>
             </select>
             <script>
-                fetch('https://api.example.com/fetchcompany')
-                    .then(response => response.json())
-                    .then(data => {
-                        const select = document.querySelector('select[name="companyid"]');
-                        data.forEach(company => {
-                            const option = document.createElement('option');
-                            option.value = company.id;
-                            option.textContent = company.name;
-                            select.appendChild(option);
-                        });
-                    })
-                    .catch(error => console.error('Error fetching companies:', error));
+                fetch('http://localhost:3000/company', {
+                    method: 'get',
+                    headers: {"Content-Type": "application/json"}
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const select = document.getElementById('company_id');
+                    data.forEach(company => {
+                        const option = document.createElement('option');
+                        option.value = company.id;
+                        option.textContent = company.name;
+                        select.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Error fetching companies:', error));
             </script>
             <select id="category_id">
                 <option value="">Select Category</option>
             </select>
             <script>
-                fetch('http://localhost:3000/category')
-                    .then(response => response.json())
-                    .then(data => {
-                        const select = document.querySelector('select[name="category_id"]');
-                        data.forEach(category => {
-                            const option = document.createElement('option');
-                            option.value = category.id;
-                            option.textContent = category.name;
-                            select.appendChild(option);
-                        });
-                    })
-                    .catch(error => console.error('Error fetching categories:', error));
-            </script></select>
+                fetch('http://localhost:3000/category', {
+                    method: 'get',
+                    headers: {"Content-Type": "application/json"}
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const select = document.getElementById('category_id');
+                    data.forEach(category => {
+                        const option = document.createElement('option');
+                        option.value = category.id;
+                        option.textContent = category.name;
+                        select.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Error fetching categories:', error));
+            </script>
             <input type="text" id="price" placeholder="price">
             <input type="text" id="product_description" placeholder="Product Description">
-            
-            <input type="submit" value="Add Product">
+            <input type="button" value="Add Product" onclick="addproduct()">
         </form>
     </div>
-    
+    <!--delete product ui-->
     <div class="deleteproducts">
-        <form id="deleteProductForm"></form>
-            <input type="text" id="product_id" name="product_id" placeholder="Product ID">
-            <input type="submit" value="Delete Product">
+        <div class="productContainer" id="productContainer"></div>
+        <div id="deleteproductnotification" style="display: none;"></div>
+        <button onclick="deleteproduct()">Delete</button>
+        
+    </div>
+    <!--add company ui-->
+    <div class="add_company">
+        <form method="post">
+            <input type="text"placeholder="Company Name">
+            <input type="text" placeholder="location">
+            <input type="text" placeholder="phone Number">
+            <input type="text" placeholder="email">
+            <input type="button" value="ADD" onclick="addcompany()">
         </form>
-        <script>
-            document.getElementById('deleteProductForm').addEventListener('submit', function(event) {
-                event.preventDefault();
-                const productId = document.getElementById('product_id').value;
-                fetch(`https://api.example.com/deleteproduct/${productId}`, {
-                    method: 'DELETE'
-                })
-                .then(response => {
-                    if (response.ok) {
-                        alert('Product deleted successfully');
-                    } else {
-                        alert('Failed to delete product');
-                    }
-                })
-                .catch(error => console.error('Error deleting product:', error));
-            });
-        </script>
     </div>
 
     

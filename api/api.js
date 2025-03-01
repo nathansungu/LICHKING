@@ -533,7 +533,7 @@ router.post('/company/add', async (req, res) => {
 
     try {
         if (!name ) {
-            return res.status(400).json({ message: 'All fields are required' });
+            return res.status(400).json({ message: 'Name is required' });
                       
         }
          //check if the author already exists

@@ -126,26 +126,11 @@ function fetchadmins(){
 }
 function fetchproducts() {
     let products = [];
-    // products.push("Orange");
-    // products.push("Orange");
-    // console.log(products);  
 
     fetch('http://localhost:3000/product', {
         method: 'GET',
         headers: { "Content-Type": "application/json" },
     })
-    // .then(response => response.json())
-    // .then(data => {
-
-    //     // data.forEach(product => {
-    //     //     products.push(product)})
-
-    //     products.push(data);
-    //     console.log(products); 
-    //     displayProducts(products);   
- 
-
-    // })
     .then(response => response.json()) // Convert response to JSON
     .then(data => {
         if (data.message && Array.isArray(data.message)) { 
@@ -170,12 +155,12 @@ function displayProducts(products) {
     products.forEach(product => {
         let productCard = document.createElement('div');
         productCard.classList.add('product');
-        ////<img src="${product.image}" alt="${product.name}">
         productCard.innerHTML = `
-            <h3>${product.name}</h3>
-            
-            <p>${product.stock}</p>
-            <strong>$${product.price}</strong>
+            <img src="${product.image}" alt="${product.name}">
+            <h3>${product.name}</h3><br>
+            <p>${product.stock}</p><br>
+            <strong>$${product.price}</strong><br>
+            <button onclick="addtocart()">Add to Cart</button>
         `;
 
         container.appendChild(productCard);
@@ -236,19 +221,19 @@ function updateproducts() {
 }
 // delete product
 function deleteproduct(){
-    const name = document.getElementById("name").value;
+    const product_id = document.getElementById("product_id").value;
     fetch('http://localhost:3000/product/delete', {
         method: 'DELETE',
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name })
+        body: JSON.stringify({ product_id })
     })
     .then(response => response.json())
     .then(data => ({ status: response.ok, data }))
     .then(({ status, data }) => {
         if (status) {
-            showNotification(data.message, "admin_notification");
+            showNotification(data.message, "deleteproductnotification");
         } else {
-            showNotification(data.message, "admin_notification");
+            showNotification(data.message, "deleteproductnotification");
             console.error("Error:", data);
         }
     })
