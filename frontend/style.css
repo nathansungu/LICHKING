@@ -1,0 +1,78 @@
+.scrollbar {
+    overflow-y: auto;
+    text-align: center;
+    font-weight: bold;
+    background-color: goldenrod;
+    height:50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    
+}
+
+@media (max-width: 600px) {
+    .scrollbar {
+        font-size: 14px;
+    }
+}
+
+@media (min-width: 601px) and (max-width: 1200px) {
+    .scrollbar {
+        font-size: 18px;
+    }
+}
+
+@media (min-width: 1201px) {
+    .scrollbar {
+        font-size: 22px;
+    }
+      
+}
+.searchbar{
+    display: flex;
+    lign-items: left;
+    margin-top: 5px;
+    gap: 10px;
+    margin-left: 20px;
+    
+}
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+.dropdownbar:hover .dropdown-content {
+    display: block;
+    display: flex;
+    flex-direction: column;
+}
+
+.dropdownbar {
+    background-color: grey;
+    padding: 10px;
+    text-align: center;
+    font-weight: bold;
+    cursor: pointer;
+    height: fit-content;
+}
+.LICHKING{
+    padding: 10px;
+    text-align: center;
+    font-weight: bold;
+}
+.divheader{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: goldenrod;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+.shoes{
+    height: fit-content;
+}
