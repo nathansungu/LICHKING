@@ -9,12 +9,23 @@
     <!-- Import index.js file -->
     <script src="index.js"></script>
     
-    <div>ADMIN WINDOW</div>
-    <div class="product_container"></div>
+    <h1>ADMIN WINDOW</h1>
+    <div class="admin_dashboard">
+        <h2>Admin Dashboard</h2>
+        <div class="admin_options">
+            <button onclick="showAddProduct()">Add Product</button>
+            <button onclick="showDeleteProduct()">Delete Product</button>
+            <button onclick="showCancelOrder()">Cancel Order</button>
+            <button onclick="showupdateorderstatus()">Order Status</button>
+            <button onclick="showAddCompany()">Add Company</button>
+            <button onclick="showAddCategory()">Add Category</button>
+            <button onclick="viewproducts()">Products</button>
+        </div>
+    </div>
     <div class="addproucts">
         <form id="addProductForm"></form>
             <input type="text" id="name" placeholder="Name">
-            <input type="text" id="image" placeholder="Product Image">
+            <input type="file" id="image" accept="image/*">
             <select id="company_id">
                 <option value="">Select Company</option>
             </select>
