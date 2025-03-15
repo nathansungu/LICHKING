@@ -96,9 +96,59 @@
     <div class="deleteproducts">
         <div class="productContainer" id="productContainer"></div>
         <div id="deleteproductnotification" style="display: none;"></div>
-        <button onclick="deleteproduct()">Delete</button>
-        
+        <button onclick="deleteSelectedProduct()">Delete</button>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('http://localhost:3000/products', {
+                method: 'get',
+                headers: {"Content-Type": "application/json"}
+            })
+            .then(response => response.json())
+            .then(data => {
+                const productContainer = document.getElementById('productContainer');
+                data.forEach(product => {
+                    const productDiv = document.createElement('div');
+                    productDiv.textContent = product.name;
+                    productDiv.dataset.id = product.id;
+                    productDiv.classList.add('product-item');
+                    productDiv.onclick = function() {
+                        document.querySelectorAll('.product-item').forEach(item => item.classList.remove('selected'));
+                        productDiv.classList.add('selected');
+                    };
+                    productContainer.appendChild(productDiv);
+                });
+            })
+            .catch(error => console.error('Error fetching products:', error));
+        });
+
+        function deleteSelectedProduct() {
+            const selectedProduct = document.querySelector('.product-item.selected');
+            if (selectedProduct) {
+                const productId = selectedProduct.dataset.id;
+                fetch(`http://localhost:3000/products/${productId}`, {
+                    method: 'delete',
+                    headers: {"Content-Type": "application/json"}
+                })
+                .then(response => {
+                    if (response.ok) {
+                        selectedProduct.remove();
+                        document.getElementById('deleteproductnotification').textContent = 'Product deleted successfully';
+                        document.getElementById('deleteproductnotification').style.display = 'block';
+                    } else {
+                        throw new Error('Failed to delete product');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error deleting product:', error);
+                    document.getElementById('deleteproductnotification').textContent = 'Error deleting product';
+                    document.getElementById('deleteproductnotification').style.display = 'block';
+                });
+            } else {
+                alert('Please select a product to delete');
+            }
+        }
+    </script>
     <!--add company ui-->
     <div class="add_company">
         <form method="post">
