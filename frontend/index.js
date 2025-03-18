@@ -215,29 +215,7 @@ function customercancelorder() {
         });
     });
 }
-//update delivery status
-function updatedeliverystatus() {
-    const order_id =  viewcart().then(cartData => {
-        let id = cartData.data.order.id;
-        return id;
-    });
-    const status = document.getElementById("status").value;
-    fetch('http://localhost:3000/order/update_delivery_status', {
-        method: 'PUT',
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ order_id, status })
-    })
-    .then(response => response.json())
-    .then(data => ({ status: response.ok, data }))
-    .then(({ status, data }) => {
-        if (status) {
-            showNotification(data.message, "admin_notification");
-        } else {
-            showNotification(data.message, "admin_notification");
-            console.error("Error:", data);
-        }
-    })
-}
+
 //check delivery status
 function checkdeliverystatus() {
     const order_id = viewcart().then(cartData => {
