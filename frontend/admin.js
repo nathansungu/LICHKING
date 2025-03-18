@@ -273,3 +273,17 @@ function getcategories() {
         console.error('Error:', error);
     });
 }
+// show notification
+function showNotification(message, id) {
+    const notification = document.getElementById(id);
+    if (notification) {
+        notification.style.display = "block";
+        notification.innerText = message;
+
+        setTimeout(() => {
+            notification.style.display = "none";
+        }, 7000); // Hide the notification after 7 seconds
+    } else {
+        console.error(`Notification element with id '${id}' not found.`);
+    }
+}
