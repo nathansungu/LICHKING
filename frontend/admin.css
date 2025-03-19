@@ -5,6 +5,13 @@
     font-size: 2.5vw; 
     font-weight: bold;
     border: 1px solid black;
+
+}
+.mainrow{
+    display: inline-flex;
+    gap: 10px;
+    width: 100%;
+    height: 100%;
 }
 .admin_dashboard {
     display: flex;
@@ -14,11 +21,10 @@
     height: 100vh; 
 }
 .admin_options {
-    margin: 20px 0;
     padding: 5px;
     list-style: none;
     background-color: goldenrod;
-    width: 100%;
+    height: 70%;
     display: flex;
     flex-direction: column;
 
@@ -32,4 +38,21 @@
     font-style: inherit;
     font-size: 2.3vw; /* Font size proportional to screen width */
     padding: 1vw; /* Padding proportional to screen width */
+}
+.admin_options button:hover {
+    background-color: lightgreen;
+}
+.operationsfunction{
+    background-color: lightgrey;
+    height: 70%;
+}
+.addproduct {
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px;
+    background-color: lightgrey;
+}
+.addproduct input{
+    padding: 5px;
 }
