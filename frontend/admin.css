@@ -56,3 +56,10 @@
 .addproduct input{
     padding: 5px;
 }
+.deleteproduct {
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px;
+    background-color: lightgrey;
+}

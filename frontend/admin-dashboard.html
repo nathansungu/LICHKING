@@ -17,7 +17,7 @@
                 <button onclick="toggleSection('addproduct')">Add Product</button>
                 <button onclick="toggleSection('deleteproducts')">Delete Product</button>
                 <button onclick="toggleSection('cancel_order')">Cancel Order</button>
-                <button onclick="toggleSection('order_status')">Order Status</button>
+                <button onclick="toggleSection('order_status_update')">Order Status Update</button>
                 <button onclick="toggleSection('add_company')">Add Company</button>
                 <button onclick="toggleSection('add_category')">Add Category</button>
                 <button onclick="toggleSection('view_products')">Products</button>
@@ -35,7 +35,7 @@
         <div class="operationsfunction">
             <div class="addproduct">
                 <h1>Add product</h1>
-            <form id="addProductForm">
+                <form id="addProductForm">
                 <label for="name">Name</label> &nbsp
                 <input type="text" id="name" placeholder="Name"><br>
                 <label for="image">Image</label> &nbsp
@@ -105,119 +105,86 @@
                 <input type="text" id="price" placeholder="Price"><br><br>
                 <label for="description">Description</label>&nbsp
                 <input type="text" id="product_description" placeholder="Product Description"><br><br>
-                <input type="button" value="Add Product" onclick="addproduct()">
-            </form>
+                <input type="button" value="Add Product" onclick="addproductss()">
+                </form>
             </div>
-        </div>
+
+            <!--deleteproduct-->
+            <div class="deleteproducts">
+                <h1>Delete product</h1>
+                <div class="productContainer" id="productContainer"></div>
+                <div id="deleteproductnotification" style="display: none;"></div>
+                <button onclick="deleteProduct()">Delete</button>
+
+            </div>
+            <div class="cancel_order">
+                <h3>Cancel Order</h3>
+                <form id="cancelOrderForm">
+                    <select id="order_id">
+                        <option value="">Select Order</option>
+                    </select>
+                    <input type="text" id="reason" placeholder="Reason for Cancellation">
+                    <input type="button" value="Cancel Order" onclick="cancelOrder()">
+                </form>
+                <div id="cancelOrderNotification" style="display: none;"></div>
+            </div>
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    fetch('http://localhost:3000/orders?status=pending', {
+                        method: 'get',
+                        headers: {"Content-Type": "application/json"}
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        const select = document.getElementById('order_id');
+                        data.forEach(order => {
+                            const option = document.createElement('option');
+                            option.value = order.id;
+                            option.textContent = `Order ${order.id} - ${order.customer_name}`;
+                            select.appendChild(option);
+                        });
+                    })
+                    .catch(error => console.error('Error fetching orders:', error));
+                });
+            </script>
+
+            <div class="order_status_update">
+                <h3>Order Status</h3>
+                <form id="orderStatusForm">
+                    <select id="order_id">
+                        <option value="">Select Order</option>
+                    </select>
+                    <select id="status">
+                        <option value="pending">Pending</option>
+                        <option value="shipped">Shipped</option>
+                        <option value="delivered">Delivered</option>
+                    </select>
+                    <input type="button" value="Update Status" onclick="updateOrderStatus()">
+                </form>
+                <div id="orderStatusNotification" style="display: none;"></div>
+
+                <div class="add_company">
+                    <form method="post">
+                        <input type="text"placeholder="Company Name">
+                        <input type="text" placeholder="location">
+                        <input type="text" placeholder="phone Number">
+                        <input type="text" placeholder="email">
+                        <input type="button" value="ADD" onclick="addcompany()">
+                    </form>
+                </div>
+
+                <div class="add_category">
+                    <form method="post">
+                        <input type="text" placeholder="Category Name">
+                        <input type="button" value="ADD" onclick="addcategory()">
+                    </form>
+                </div> 
+
 
 
     </div>
     <!-- 
-    <div class="addproucts">
-        
-    </div>
-   
-    <div class="cancel_order">
-        <h3>Cancel Order</h3>
-        <form id="cancelOrderForm">
-            <select id="order_id">
-                <option value="">Select Order</option>
-            </select>
-            <input type="text" id="reason" placeholder="Reason for Cancellation">
-            <input type="button" value="Cancel Order" onclick="cancelOrder()">
-        </form>
-        <div id="cancelOrderNotification" style="display: none;"></div>
-    </div>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            fetch('http://localhost:3000/orders?status=pending', {
-                method: 'get',
-                headers: {"Content-Type": "application/json"}
-            })
-            .then(response => response.json())
-            .then(data => {
-                const select = document.getElementById('order_id');
-                data.forEach(order => {
-                    const option = document.createElement('option');
-                    option.value = order.id;
-                    option.textContent = `Order ${order.id} - ${order.customer_name}`;
-                    select.appendChild(option);
-                });
-            })
-            .catch(error => console.error('Error fetching orders:', error));
-        });
-    </script>
-
-    
-    <div class="deleteproducts">
-        <div class="productContainer" id="productContainer"></div>
-        <div id="deleteproductnotification" style="display: none;"></div>
-        <button onclick="deleteSelectedProduct()">Delete</button>
-    </div>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            fetch('http://localhost:3000/products', {
-                method: 'get',
-                headers: {"Content-Type": "application/json"}
-            })
-            .then(response => response.json())
-            .then(data => {
-                const productContainer = document.getElementById('productContainer');
-                data.forEach(product => {
-                    const productDiv = document.createElement('div');
-                    productDiv.textContent = product.name;
-                    productDiv.dataset.id = product.id;
-                    productDiv.classList.add('product-item');
-                    productDiv.onclick = function() {
-                        document.querySelectorAll('.product-item').forEach(item => item.classList.remove('selected'));
-                        productDiv.classList.add('selected');
-                    };
-                    productContainer.appendChild(productDiv);
-                });
-            })
-            .catch(error => console.error('Error fetching products:', error));
-        });
-
-        function deleteSelectedProduct() {
-            const selectedProduct = document.querySelector('.product-item.selected');
-            if (selectedProduct) {
-                const productId = selectedProduct.dataset.id;
-                fetch(`http://localhost:3000/products/${productId}`, {
-                    method: 'delete',
-                    headers: {"Content-Type": "application/json"}
-                })
-                .then(response => {
-                    if (response.ok) {
-                        selectedProduct.remove();
-                        document.getElementById('deleteproductnotification').textContent = 'Product deleted successfully';
-                        document.getElementById('deleteproductnotification').style.display = 'block';
-                    } else {
-                        throw new Error('Failed to delete product');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error deleting product:', error);
-                    document.getElementById('deleteproductnotification').textContent = 'Error deleting product';
-                    document.getElementById('deleteproductnotification').style.display = 'block';
-                });
-            } else {
-                alert('Please select a product to delete');
-            }
-        }
-    </script>
-    
-    <div class="add_company">
-        <form method="post">
-            <input type="text"placeholder="Company Name">
-            <input type="text" placeholder="location">
-            <input type="text" placeholder="phone Number">
-            <input type="text" placeholder="email">
-            <input type="button" value="ADD" onclick="addcompany()">
-        </form>
-    </div>
-    
-
-    
+      
     <div class="about_us">
         <h2>About Us</h2>
         <p>Welcome to LINCHKING Admin Dashboard. Here you can manage products, companies, and categories efficiently. Our goal is to provide a seamless experience for administrators to keep the product catalog up-to-date and manage company information effortlessly.</p>

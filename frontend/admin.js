@@ -93,7 +93,7 @@ function updateproducts() {
 }
 // delete product
 function deleteproduct(){
-    const product_id = document.getElementById("product_id").value;
+    const product_id = document.getElementById("selected_product_id").value;
     fetch('http://localhost:3000/product/delete', {
         method: 'DELETE',
         headers: { "Content-Type": "application/json" },
