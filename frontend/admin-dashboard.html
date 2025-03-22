@@ -22,6 +22,7 @@
                 <button onclick="toggleSection('add_category')">Add Category</button>
                 <button onclick="toggleSection('view_products')">Products</button>
             </div>
+        </div><br>
             <script>
                 function toggleSection(sectionClass) {
                     const sections = document.querySelectorAll('.operationsfunction > div');
@@ -31,81 +32,80 @@
                     document.querySelector(`.${sectionClass}`).style.display = 'flex';
                 }
             </script>
-        </div><br>
+        
         <div class="operationsfunction">
             <div class="addproduct">
                 <h1>Add product</h1>
                 <form id="addProductForm">
-                <label for="name">Name</label> &nbsp
-                <input type="text" id="name" placeholder="Name"><br>
-                <label for="image">Image</label> &nbsp
-                <input type="file" id="image" accept="image/*" onchange="displayImage(event)">
-                <img id="imagePreview" src="#" alt="Image Preview" style="display:none; max-width: 200px; max-height: 200px;"><br>
-                <script>
-                function displayImage(event) {
-                    const image = document.getElementById('image').files[0];
-                    const imagePreview = document.getElementById('imagePreview');
-                    const reader = new FileReader();
+                    <label for="name">Name</label> &nbsp
+                    <input type="text" id="name" placeholder="Name"><br>
+                    <label for="image">Image</label> &nbsp
+                    <input type="file" id="image" accept="image/*" onchange="displayImage(event)">
+                    <img id="imagePreview" src="#" alt="Image Preview" style="display:none; max-width: 200px; max-height: 200px;"><br>
+                    <script>
+                        function displayImage(event) {
+                            const image = document.getElementById('image').files[0];
+                            const imagePreview = document.getElementById('imagePreview');
+                            const reader = new FileReader();
 
-                    reader.onload = function(e) {
-                        imagePreview.src = e.target.result;
-                        imagePreview.style.display = 'block';
-                    };
+                            reader.onload = function(e) {
+                                imagePreview.src = e.target.result;
+                                imagePreview.style.display = 'block';
+                            };
 
-                    if (image) {
-                        reader.readAsDataURL(image);
-                    } else {
-                        imagePreview.style.display = 'none';
-                    }
-                }
-                </script>
-                <select id="company_id">
-                <option value="">Select Company</option>
-                </select>
-                <script>
-                fetch('http://localhost:3000/company', {
-                    method: 'get',
-                    headers: {"Content-Type": "application/json"}
-                })
-                .then(response => response.json())
-                .then(data => {
-                    const select = document.getElementById('company_id');
-                    data.forEach(company => {
-                    const option = document.createElement('option');
-                    option.value = company.id;
-                    option.textContent = company.name;
-                    select.appendChild(option);
-                    });
-                })
-                .catch(error => console.error('Error fetching companies:', error));
-                </script>
-                <select id="category_id">
-                <option value="">Select Category</option>
-                </select>
-                <script>
-                fetch('http://localhost:3000/category', {
-                    method: 'get',
-                    headers: {"Content-Type": "application/json"}
-                })
-                .then(response => response.json())
-                .then(data => {
-                    const select = document.getElementById('category_id');
-                    data.forEach(category => {
-                    const option = document.createElement('option');
-                    option.value = category.id;
-                    option.textContent = category.name;
-                    select.appendChild(option);
-                    });
-                })
-                .catch(error => console.error('Error fetching categories:', error));
-                </script>
-                <br>
-                <br>
-                <label for="price">Price</label>&nbsp
-                <input type="text" id="price" placeholder="Price"><br><br>
-                <label for="description">Description</label>&nbsp
-                <input type="text" id="product_description" placeholder="Product Description"><br><br>
-                <input type="button" value="Add Product" onclick="addproductss()">
+                            if (image) {
+                                reader.readAsDataURL(image);
+                            } else {
+                                imagePreview.style.display = 'none';
+                            }
+                        }
+                    </script>
+                    <select id="company_id">
+                        <option value="">Select Company</option>
+                    </select>
+                    <script>
+                        fetch('http://localhost:3000/company', {
+                            method: 'get',
+                            headers: {"Content-Type": "application/json"}
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            const select = document.getElementById('company_id');
+                            data.forEach(company => {
+                                const option = document.createElement('option');
+                                option.value = company.id;
+                                option.textContent = company.name;
+                                select.appendChild(option);
+                            });
+                        })
+                        .catch(error => console.error('Error fetching companies:', error));
+                    </script>
+                    <select id="category_id">
+                        <option value="">Select Category</option>
+                    </select>
+                    <script>
+                        fetch('http://localhost:3000/category', {
+                            method: 'get',
+                            headers: {"Content-Type": "application/json"}
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            const select = document.getElementById('category_id');
+                            data.forEach(category => {
+                                const option = document.createElement('option');
+                                option.value = category.id;
+                                option.textContent = category.name;
+                                select.appendChild(option);
+                            });
+                        })
+                        .catch(error => console.error('Error fetching categories:', error));
+                    </script>
+                    <br><br>
+                    <label for="price">Price</label>&nbsp
+                    <input type="text" id="price" placeholder="Price"><br><br>
+                    <label for="description">Description</label>&nbsp
+                    <input type="text" id="product_description" placeholder="Product Description"><br><br>
+                    <input type="button" value="Add Product" onclick="addproductss()">
                 </form>
             </div>
 
@@ -115,8 +115,8 @@
                 <div class="productContainer" id="productContainer"></div>
                 <div id="deleteproductnotification" style="display: none;"></div>
                 <button onclick="deleteProduct()">Delete</button>
-
             </div>
+
             <div class="cancel_order">
                 <h3>Cancel Order</h3>
                 <form id="cancelOrderForm">
@@ -162,35 +162,43 @@
                     <input type="button" value="Update Status" onclick="updateOrderStatus()">
                 </form>
                 <div id="orderStatusNotification" style="display: none;"></div>
+            </div>
 
-                <div class="add_company">
-                    <form method="post">
-                        <input type="text"placeholder="Company Name">
-                        <input type="text" placeholder="location">
-                        <input type="text" placeholder="phone Number">
-                        <input type="text" placeholder="email">
-                        <input type="button" value="ADD" onclick="addcompany()">
-                    </form>
-                </div>
+            <div class="add_company">
+            <form method="post">
+                <input type="text" placeholder="Company Name">
+                <input type="text" placeholder="location">
+                <input type="text" placeholder="phone Number">
+                <input type="text" placeholder="email">
+                <input type="button" value="ADD" onclick="addcompany()">
+            </form>
+            </div>
 
-                <div class="add_category">
-                    <form method="post">
-                        <input type="text" placeholder="Category Name">
-                        <input type="button" value="ADD" onclick="addcategory()">
-                    </form>
-                </div> 
+            <div class="add_category">
+            <form method="post">
+                <input type="text" placeholder="Category Name">
+                <input type="button" value="ADD" onclick="addcategory()">
+            </form>
+            </div> 
 
-
-
+            
+            <div class="view_products">
+                <h1>Products</h1>
+                <div class="productContainer" id="productContainer"></div>    
+            </div>
+        </div>   
     </div>
-    <!-- 
-      
     <div class="about_us">
         <h2>About Us</h2>
         <p>Welcome to LINCHKING Admin Dashboard. Here you can manage products, companies, and categories efficiently. Our goal is to provide a seamless experience for administrators to keep the product catalog up-to-date and manage company information effortlessly.</p>
         <p>For any assistance, please contact our support team at support@linchking.com.</p>
-    </div></div>
-    -->
-    
-</body>
+    </div>
+
+</body> 
+<footer>
+    <div class="footer">
+        <p>© 2021 LICHKING. All Rights Reserved.</p>
+    </div>
+</footer>  
+        
 </html>
