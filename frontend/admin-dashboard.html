@@ -9,18 +9,32 @@
 <body>
     <!-- Import admin.js file -->
     <script src="admin.js"></script>
+    <!--add notifications divs-->
+    <div class="notificationdivs">
+        <div class="category_notification"></div>
+        <div class="company_notification"></div>
+        <div class="cart_notification"></div>
+        <div class="admin_notification"></div>
+        <div class="deleteproductnotification"></div>
+    </div>  
     
     <h1 class="adminwindowheader">LICHKING ADMIN WINDOW</h1>
     <div class="mainrow">
         <div class="admin_dashboard">
             <div class="admin_options">
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        toggleSection('view_products');
+                    });
+                </script>
+                <button onclick="toggleSection('view_products')">Products</button>
                 <button onclick="toggleSection('addproduct')">Add Product</button>
                 <button onclick="toggleSection('deleteproducts')">Delete Product</button>
                 <button onclick="toggleSection('cancel_order')">Cancel Order</button>
                 <button onclick="toggleSection('order_status_update')">Order Status Update</button>
                 <button onclick="toggleSection('add_company')">Add Company</button>
                 <button onclick="toggleSection('add_category')">Add Category</button>
-                <button onclick="toggleSection('view_products')">Products</button>
+                
             </div>
         </div><br>
             <script>
@@ -31,9 +45,14 @@
                     });
                     document.querySelector(`.${sectionClass}`).style.display = 'flex';
                 }
+                
             </script>
         
         <div class="operationsfunction">
+            <div class="view_products">
+                <h1>Products</h1>
+                <div class="productContainer" id="productContainer"></div>    
+            </div>
             <div class="addproduct">
                 <h1>Add product</h1>
                 <form id="addProductForm">
@@ -64,41 +83,17 @@
                         <option value="">Select Company</option>
                     </select>
                     <script>
-                        fetch('http://localhost:3000/company', {
-                            method: 'get',
-                            headers: {"Content-Type": "application/json"}
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            const select = document.getElementById('company_id');
-                            data.forEach(company => {
-                                const option = document.createElement('option');
-                                option.value = company.id;
-                                option.textContent = company.name;
-                                select.appendChild(option);
-                            });
-                        })
-                        .catch(error => console.error('Error fetching companies:', error));
+                        document.addEventListener('DOMContentLoaded', function() {
+                            getcompanies();
+                    });                                                
                     </script>
                     <select id="category_id">
                         <option value="">Select Category</option>
                     </select>
                     <script>
-                        fetch('http://localhost:3000/category', {
-                            method: 'get',
-                            headers: {"Content-Type": "application/json"}
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            const select = document.getElementById('category_id');
-                            data.forEach(category => {
-                                const option = document.createElement('option');
-                                option.value = category.id;
-                                option.textContent = category.name;
-                                select.appendChild(option);
-                            });
-                        })
-                        .catch(error => console.error('Error fetching categories:', error));
+                        document.addEventListener('DOMContentLoaded', function() {
+                            getcategories();
+                    });                        
                     </script>
                     <br><br>
                     <label for="price">Price</label>&nbsp
@@ -165,27 +160,24 @@
             </div>
 
             <div class="add_company">
-            <form method="post">
-                <input type="text" placeholder="Company Name">
-                <input type="text" placeholder="location">
-                <input type="text" placeholder="phone Number">
-                <input type="text" placeholder="email">
-                <input type="button" value="ADD" onclick="addcompany()">
-            </form>
+                <h1>Add Company</h1>
+                <form method="post">
+                    <input type="text" id="companyname" placeholder="Company Name">
+                    <input type="text" id="companylocation" placeholder="Location">
+                    <input type="text" id="phone_no" placeholder="Phone Number">
+                    <input type="email" id="email" placeholder="Email">
+                    <input type="button" value="ADD" onclick="addcompany()">
+                </form>
             </div>
 
             <div class="add_category">
-            <form method="post">
-                <input type="text" placeholder="Category Name">
-                <input type="button" value="ADD" onclick="addcategory()">
-            </form>
+                <h1>Add Products Category</h1>
+                <form method="post">
+                    <input type="text" id="categoryname" placeholder="Category Name">
+                    <input type="button" value="ADD" onclick="addcategory()">
+                </form>
             </div> 
 
-            
-            <div class="view_products">
-                <h1>Products</h1>
-                <div class="productContainer" id="productContainer"></div>    
-            </div>
         </div>   
     </div>
     <div class="about_us">
@@ -197,7 +189,7 @@
 </body> 
 <footer>
     <div class="footer">
-        <p>© 2021 LICHKING. All Rights Reserved.</p>
+        <p>© 2025 LICHKING. All Rights Reserved.</p>
     </div>
 </footer>  
         

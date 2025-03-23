@@ -19,9 +19,9 @@ function registeradmin() {
     .then(response => response.json().then(data => ({ status: response.ok, data })) )
     .then(({ status, data }) => {
         if (status) {
-            showNotification(data.message, "adminreg_notification");
+            showNotification(data.message, "admin_notification");
         } else {
-            showNotification(data.message, "adminreg_notification");
+            showNotification(data.message, "admin_notification");
             console.error("Error:", data);
         }
     })
@@ -35,12 +35,32 @@ function fetchadmins(){
     .then (response => response.json().then(data => ({ status: response.ok, data })) )
     .then(({ status, data }) => {
         if (status) {
-            showNotification(data.message, "adminreg_notification");
+            showNotification(data.message, "admin_notification");
         } else {
-            showNotification(data.message, "adminreg_notification");
+            showNotification(data.message, "admin_notification");
             console.error("Error:", data);
         }
     })
+}
+//display products
+function displayProducts(products) {
+    let container = document.getElementById('productContainer');
+    container.innerHTML = ""; // Clear previous content
+
+    products.forEach(product => {
+        let productCard = document.createElement('div');
+        productCard.classList.add('product');
+        productCard.innerHTML = `
+            <img src="${product.image}" alt="${product.name}">
+            <h3>${product.name}</h3><br>
+            <p>${product.stock}</p><br>
+            <strong>$${product.price}</strong><br>
+            <button onclick="addtocart()">Add to Cart</button>
+        `;
+
+        container.appendChild(productCard);
+       
+    });
 }
 
 //add products
@@ -211,23 +231,25 @@ function addcompany(){
 //get all companies
 function getcompanies() {
     fetch('http://localhost:3000/company', {
-        method: 'GET',
-        headers: { "Content-Type": "application/json" },
+        method: 'get',
+        headers: {"Content-Type": "application/json"}
     })
     .then(response => response.json())
-    .then(data => ({ status: response.ok, data }))
-    .then(({ status, data }) => {
-        if (status) {
-            showNotification(data.message, "company_notification");
-        } else {
-            showNotification(data.message, "company_notification");
-            console.error("Error:", data);
-        }
+    .then(data => {
+        const select = document.getElementById('company_id');
+        data.forEach(company => {
+            const option = document.createElement('option');
+            option.value = company.id;
+            option.textContent = company.name;
+            select.appendChild(option);
+        })
+        .catch(error => {
+            showNotification('Error: ' + error.message, "company_notification");
+            console.error('Error:', error);
+        });
+        
     })
-    .catch(error => {
-        showNotification('Error: ' + error.message, "company_notification");
-        console.error('Error:', error);
-    });
+    
 }
 //add category
 function addcategory() {
@@ -255,23 +277,23 @@ function addcategory() {
 //get all categories
 function getcategories() {
     fetch('http://localhost:3000/category', {
-        method: 'GET',
-        headers: { "Content-Type": "application/json" },
+        method: 'get',
+        headers: {"Content-Type": "application/json"}
     })
     .then(response => response.json())
-    .then(data => ({ status: response.ok, data }))
-    .then(({ status, data }) => {
-        if (status) {
-            showNotification(data.message, "category_notification");
-        } else {
-            showNotification(data.message, "category_notification");
-            console.error("Error:", data);
-        }
+    .then(data => {
+        const select = document.getElementById('category_id');
+        data.forEach(category => {
+            const option = document.createElement('option');
+            option.value = category.id;
+            option.textContent = category.name;
+            select.appendChild(option);
+        });
     })
-    .catch(error => {
+    {
         showNotification('Error: ' + error.message, "category_notification");
         console.error('Error:', error);
-    });
+    }
 }
 // show notification
 function showNotification(message, id) {
