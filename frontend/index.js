@@ -127,6 +127,29 @@ function displayProducts(products) {
 
 //automaticaly load products 
 fetchproducts();
+//create new products
+function addproduct() {
+    const name = document.getElementById("name");
+    const company_id =document.getElementById("company_id");
+    const category_id = document.getElementById("category_id");
+    const price = document.getElementById("price");
+    const stock = document.getElementById("");
+    fetch('http:/localhost:3000//product/add',{
+        method: 'post', 
+        header: {"Content-Type": "application/json"},
+        body: JSON.stringify({ name,company_id, category_id, price, stock})
+    })
+    .then(response => response.json())
+    .then(data => ({ status: response.ok, data }))
+    .then(({ status, data }) => {
+        if (status) {
+            showNotification(data.message, "admin_notification");
+        } else {
+            showNotification(data.message, "admin_notification");
+            console.error("Error:", data);
+        }
+    })
+}
 
 
 
@@ -146,7 +169,7 @@ function addtocart() {
         if (status) {
             showNotification(data.message, "cart_notification");
         } else {
-            showNotification(data.message, "cart_notification");
+            showNotification(data.message, "admin_notification");
             console.error("Error:", data);
         }
     })

@@ -11,11 +11,8 @@
     <script src="admin.js"></script>
     <!--add notifications divs-->
     <div class="notificationdivs">
-        <div class="category_notification"></div>
-        <div class="company_notification"></div>
-        <div class="cart_notification"></div>
-        <div class="admin_notification"></div>
-        <div class="deleteproductnotification"></div>
+       <div class="admin_notification"></div>
+        
     </div>  
     
     <h1 class="adminwindowheader">LICHKING ADMIN WINDOW</h1>
@@ -57,7 +54,7 @@
                 <h1>Add product</h1>
                 <form id="addProductForm">
                     <label for="name">Name</label> &nbsp
-                    <input type="text" id="name" placeholder="Name"><br>
+                    <input type="text" id="pname" placeholder="Name"><br>
                     <label for="image">Image</label> &nbsp
                     <input type="file" id="image" accept="image/*" onchange="displayImage(event)">
                     <img id="imagePreview" src="#" alt="Image Preview" style="display:none; max-width: 200px; max-height: 200px;"><br>
@@ -98,9 +95,11 @@
                     <br><br>
                     <label for="price">Price</label>&nbsp
                     <input type="text" id="price" placeholder="Price"><br><br>
+                    <label for="stock" >stock </label>
+                    <input type="number", id="stock" placeholder="stock">
                     <label for="description">Description</label>&nbsp
                     <input type="text" id="product_description" placeholder="Product Description"><br><br>
-                    <input type="button" value="Add Product" onclick="addproductss()">
+                    <input type="button" value="Add Product" onclick="addproduct()">
                 </form>
             </div>
 
