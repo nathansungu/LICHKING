@@ -43,8 +43,25 @@ function fetchadmins(){
     })
 }
 //display products
-function displayProducts(products) {
-    let container = document.getElementById('productContainer');
+function displayProducts() {
+    fetch('http://localhost:3000/product', {
+        method: 'GET',
+        headers: { "Content-Type": "application/json" }
+    })  
+    .then(response => response.json())
+    .then(data => {
+        const products =data.message;
+        let container = document.getElementById('productContainer');
+        renderProducts(products, container)
+
+    })
+    .catch(error => {
+        showNotification(error.message, "product_notification");
+        console.error("Unable to connect to server", error);
+    });
+}
+// Render products in the container
+function renderProducts(products, container) {
     container.innerHTML = ""; // Clear previous content
 
     products.forEach(product => {
@@ -62,30 +79,38 @@ function displayProducts(products) {
        
     });
 }
+displayProducts();
 
-//add products
-function addproducts() {
+// add products
+function addproduct() {
     const name = document.getElementById("name").value;
     const company_id = document.getElementById("company_id").value;
     const category_id = document.getElementById("category_id").value;
     const price = document.getElementById("price").value;
     const stock = document.getElementById("stock").value;
+    const description = document.getElementById("description").value;
 
-    fetch('http://localhost:3000/product/add', {
+    fetch('http://localhost:3000/product/add',{
         method: 'POST',
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, company_id, category_id, price, stock })
+        body: JSON.stringify({ name, company_id, category_id, price, stock, description })
     })
-    .then(response => response.json())
-    .then(data => ({ status: response.ok, data }))
+    .then(async response => {
+        const data = await response.json();
+        return { status: response.ok, data };
+    })
     .then(({ status, data }) => {
         if (status) {
-            showNotification( data.message, "admin_notification");
+            showNotification(data.message, "addproductnotification");
         } else {
-            showNotification(data.message, "admin_notification");
+            showNotification(data.message, "addproductnotification");
             console.error("Error:", data);
         }
     })
+    .catch(error => {
+        showNotification("Unable to connect to server", "admin_notification");
+        console.error("Unable to connect to server", error);
+    });
 }
 //update product
 function updateproducts() {
@@ -217,9 +242,9 @@ function addcompany(){
     .then(data => ({ status: response.ok, data }))
     .then(({ status, data }) => {
         if (status) {
-            showNotification(data.message, "company_notification");
+            showNotification(data.message, "admin_notification");
         } else {
-            showNotification(data.message, "company_notification");
+            showNotification(data.message, "admin_notification");
             console.error("Error:", data);
         }
     })
@@ -231,25 +256,25 @@ function addcompany(){
 //get all companies
 function getcompanies() {
     fetch('http://localhost:3000/company', {
-        method: 'get',
-        headers: {"Content-Type": "application/json"}
+        method: 'GET',
+        headers: { "Content-Type": "application/json" }
     })
     .then(response => response.json())
     .then(data => {
+        const companies = data.company;
         const select = document.getElementById('company_id');
-        data.forEach(company => {
+        select.innerHTML = ""; // Clear existing options
+        companies.forEach(company => {
             const option = document.createElement('option');
-            option.value = company.id;
+            option.value = company.id
             option.textContent = company.name;
             select.appendChild(option);
-        })
-        .catch(error => {
-            showNotification('Error: ' + error.message, "company_notification");
-            console.error('Error:', error);
         });
-        
     })
-    
+    .catch(error => {
+        showNotification('Error: ' + error.message, "admin_notification");
+        console.error('Error:', error);
+    });
 }
 //add category
 function addcategory() {
@@ -277,23 +302,25 @@ function addcategory() {
 //get all categories
 function getcategories() {
     fetch('http://localhost:3000/category', {
-        method: 'get',
-        headers: {"Content-Type": "application/json"}
+        method: 'GET',
+        headers: { "Content-Type": "application/json" }
     })
     .then(response => response.json())
     .then(data => {
+        const categories = data.category;
         const select = document.getElementById('category_id');
-        data.forEach(category => {
+        select.innerHTML = ""; // Clear existing options
+        categories.forEach(category => {
             const option = document.createElement('option');
             option.value = category.id;
             option.textContent = category.name;
             select.appendChild(option);
         });
     })
-    {
+    .catch(error => {
         showNotification('Error: ' + error.message, "category_notification");
         console.error('Error:', error);
-    }
+    });
 }
 // show notification
 function showNotification(message, id) {

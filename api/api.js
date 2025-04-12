@@ -6,6 +6,9 @@ const{message} =require("statuses");
 const sessionconfig = require("../session.config.js/sessionconfig")
 const express = require("express");
 const app = express();
+//use cors
+const cors = require('cors');
+app.use(cors());
 app.use(sessionconfig);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -14,10 +17,6 @@ const router =express.Router();
 const port = process.env.PORT || 3000;
 //set the port usage
 
-//import cors
-const cors = require('cors');
-// Enable CORS for all origins
-app.use(cors());
 app.use(router);
 
 app.listen(port, () => {
@@ -197,8 +196,8 @@ router.post('/reset-password', async (req, res, next) => {
 //add a product
 router.post("/product/add", async (req, res, next)=>{
     try {
-        const{name, company_id, category_id, price, stock,}=req.body;
-        if (!name|| !company_id || !category_id|| !price|| !stock) {
+        const{name, company_id, category_id, price, stock,description}=req.body;
+        if (!name|| !company_id || !category_id|| !price|| !stock|| !description) {
             return res.status(400).json({message: "provide all the details"})
         }
         const checksimillarproduct = await Products.findOne({where: {name}});   
@@ -206,7 +205,7 @@ router.post("/product/add", async (req, res, next)=>{
             return res.status(400).json({message: "Product already exists"})
             
         }else{
-            const newProduct = await Products.create({ name, company_id, category_id, price,stock });
+            const newProduct = await Products.create({ name, company_id, category_id, price,stock,description});
             res.status(201).json({
             message: "Product added successfully",
             product: newProduct

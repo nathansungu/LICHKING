@@ -7,11 +7,11 @@
     <link rel="stylesheet" href="admin.css">
 </head>
 <body>
-    <!-- Import admin.js file -->
-    <script src="admin.js"></script>
+    
     <!--add notifications divs-->
     <div class="notificationdivs">
-       <div class="admin_notification"></div>
+       <div class="admin_notification" id="admin_notification"></div>
+       <div class="product_notification" id="product_notification"></div>
         
     </div>  
     
@@ -54,7 +54,7 @@
                 <h1>Add product</h1>
                 <form id="addProductForm">
                     <label for="name">Name</label> &nbsp
-                    <input type="text" id="pname" placeholder="Name"><br>
+                    <input type="text" id="name" placeholder="Name"><br>
                     <label for="image">Image</label> &nbsp
                     <input type="file" id="image" accept="image/*" onchange="displayImage(event)">
                     <img id="imagePreview" src="#" alt="Image Preview" style="display:none; max-width: 200px; max-height: 200px;"><br>
@@ -76,31 +76,25 @@
                             }
                         }
                     </script>
-                    <select id="company_id">
+                    <label for="company_id">Company</label> &nbsp
+                    <select id="company_id" onclick = "getcompanies()">
                         <option value="">Select Company</option>
                     </select>
-                    <script>
-                        document.addEventListener('DOMContentLoaded', function() {
-                            getcompanies();
-                    });                                                
-                    </script>
-                    <select id="category_id">
+                    <label for="category_id">Category</label>
+                    <select id="category_id" onclick="getcategories()">
                         <option value="">Select Category</option>
                     </select>
-                    <script>
-                        document.addEventListener('DOMContentLoaded', function() {
-                            getcategories();
-                    });                        
-                    </script>
+                    
                     <br><br>
                     <label for="price">Price</label>&nbsp
                     <input type="text" id="price" placeholder="Price"><br><br>
                     <label for="stock" >stock </label>
-                    <input type="number", id="stock" placeholder="stock">
+                    <input type="number" id="stock" placeholder="stock"><br>
                     <label for="description">Description</label>&nbsp
-                    <input type="text" id="product_description" placeholder="Product Description"><br><br>
-                    <input type="button" value="Add Product" onclick="addproduct()">
+                    <input type="text" id="description" placeholder="Product Description"><br><br>
+                    <button type="button" onclick="addproduct()">ADD PRODUCT</button>
                 </form>
+                <div id="addproductnotification" style="display: none;"></div>
             </div>
 
             <!--deleteproduct-->
@@ -185,6 +179,8 @@
         <p>For any assistance, please contact our support team at support@linchking.com.</p>
     </div>
 
+<!-- Import admin.js file -->
+<script src="admin.js" defer></script>
 </body> 
 <footer>
     <div class="footer">
