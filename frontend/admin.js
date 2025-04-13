@@ -68,10 +68,13 @@ function renderProducts(products, container) {
         let productCard = document.createElement('div');
         productCard.classList.add('product');
         productCard.innerHTML = `
-            <img src="${product.image}" alt="${product.name}">
-            <h3>${product.name}</h3><br>
-            <p>${product.stock}</p><br>
-            <strong>$${product.price}</strong><br>
+            <img src="${product.image}" alt="${product.name}"><br>
+            <h3>Name: ${product.name}</h3><br>
+            <p>Stock: ${product.stock}</p><br>
+            <strong>Price: ${product.price}</strong><br>
+            <p>Company: ${product.Company.name}</p><br>
+            <p>Category: ${product.Category.name}</p><br>
+            <p>Description: ${product.description}</p><br>
             <button onclick="addtocart()">Add to Cart</button>
         `;
 
@@ -84,6 +87,7 @@ displayProducts();
 // add products
 function addproduct() {
     const name = document.getElementById("name").value;
+    const image = document.getElementById("image").value;
     const company_id = document.getElementById("company_id").value;
     const category_id = document.getElementById("category_id").value;
     const price = document.getElementById("price").value;
@@ -93,7 +97,7 @@ function addproduct() {
     fetch('http://localhost:3000/product/add',{
         method: 'POST',
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, company_id, category_id, price, stock, description })
+        body: JSON.stringify({ image, name, company_id, category_id, price, stock, description })
     })
     .then(async response => {
         const data = await response.json();

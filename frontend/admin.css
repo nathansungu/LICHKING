@@ -53,7 +53,7 @@
 .addproduct input{
     padding: 5px;
 }
-.deleteproduct, .cancel_order, .addproduct, .order_status_update, .add_company, .add_category{
+.view_products, .deleteproduct, .cancel_order, .addproduct, .order_status_update, .add_company, .add_category{
     display: none;
     flex-direction: column;
     gap: 10px;
