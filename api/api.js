@@ -196,8 +196,8 @@ router.post('/reset-password', async (req, res, next) => {
 //add a product
 router.post("/product/add", async (req, res, next)=>{
     try {
-        const{name, company_id, category_id, price, stock,description}=req.body;
-        if (!name|| !company_id || !category_id|| !price|| !stock|| !description) {
+        const{name, image, company_id, category_id, price, stock,description}=req.body;
+        if (!name|| !image|| !company_id || !category_id|| !price|| !stock|| !description) {
             return res.status(400).json({message: "provide all the details"})
         }
         const checksimillarproduct = await Products.findOne({where: {name}});   
@@ -221,11 +221,17 @@ router.post("/product/add", async (req, res, next)=>{
 router.get("/product", async (req, res, next) => {
     try {
         const products = await Products.findAll({
-            attributes: ['name', 'price', 'stock'],
-            include: [{
+            attributes: ['name','image', 'price', 'stock', 'description'],
+            include: [
+            {
                 model: Company,
-                attributes: ['name']
-            }]
+                attributes: ['name'],
+            },
+            {
+                model: Category,
+                attributes: ['name'],
+            }
+            ]
         });
         if(!products) {
             return res.status(404).json({message: 'No products found'});
