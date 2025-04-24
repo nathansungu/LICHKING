@@ -31,7 +31,11 @@ const generatePassword = (timestamp) => {
 
 // Payment Route
 app.post("/pay", async (req, res) => {
-  const { phone, amount } = req.body;
+  const { phone, amount, orderId } = req.body;
+  //check if fields are valid
+  if(!phone ){
+    return res.status(400).json({ error: "Phone number is required" });
+  }
 
   try {
     const access_token = await getAccessToken();
@@ -48,8 +52,8 @@ app.post("/pay", async (req, res) => {
       PartyB: SHORTCODE,
       PhoneNumber: phone,
       CallBackURL: CALLBACK_URL,
-      AccountReference: "Order123",
-      TransactionDesc: "E-commerce Purchase",
+      AccountReference: orderId,
+      TransactionDesc: "LICHKING SHOP"
     };
 
     const response = await fetch("https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest", {
