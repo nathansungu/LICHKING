@@ -34,7 +34,7 @@
                 <button onclick="toggleSection('add_category')">Add Category</button>
                 
             </div>
-        </div><br>
+         </div><br>
             <script>
                 function toggleSection(sectionClass) {
                     const sections = document.querySelectorAll('.operationsfunction > div');
@@ -42,9 +42,9 @@
                         section.style.display = 'none';
                     });
                     document.querySelector(`.${sectionClass}`).style.display = 'flex';
-                }
-                
+                }                
             </script>
+        </div>  
         
         <div class="operationsfunction">
             <div class="view_products">
@@ -172,9 +172,7 @@
                     <input type="text" id="categoryname" placeholder="Category Name">
                     <input type="button" value="ADD" onclick="addcategory()">
                 </form>
-            </div> 
-
-        </div>   
+            </div>            
     </div>
     <div class="about_us">
         <h2>About Us</h2>

@@ -32,9 +32,12 @@ const nodemailer = require('nodemailer');
 //customer registration
 router.post("/register/customer", async (req, res, next) => {
     try {
-        const { first_name, second_name, email,phone_no, password } = req.body;
-        if (!first_name || !second_name || !email || !phone_no|| !password) {
+        const { first_name, second_name, email,phone_no, password, confirmPassword} = req.body;
+        if (!first_name || !second_name || !email || !phone_no|| !password || !confirmPassword) {
             return res.status(400).json({ message: "All fields are required" });
+        }
+        if (password !== confirmPassword) {
+            return res.status(400).json({ message: "Passwords do not match" });            
         }
         const hashedPassword = await bcrypt.hash(password, 10);
         const newCustomer = await Customer.create({
@@ -51,9 +54,13 @@ router.post("/register/customer", async (req, res, next) => {
         });
     } catch (error) {
         if (error.name === "SequelizeUniqueConstraintError") {
-            res.status(400).json({ message: "Email already exists" });
+            let field = error.errors[0]?.path;
+            if (field == "phone_no") {
+                field =" phone Number "       
+            };
+            res.status(400).json({ message: `A record with this ${field} already exists` });
         } else {
-            next(error);
+            res.status(400).json({ message:  "An error occurred" });
         }
     }
 });
@@ -68,36 +75,33 @@ router.post("/login", async (req, res, next) => {
 
         // Check if the user is a customer
         let user = await Customer.findOne({ 
-            where: { email: Sequelize.literal(`email = '${email.replace(/'/g, "''")}'`) } 
+            where: { email } 
         });
-
-        if (user && await bcrypt.compare(password, user.password)) {
+        let bcryptpass = await bcrypt.hash(password, 10);
+        let checkpassword = await compare(bcryptpass, user.password);
+        if (user && checkpassword) {
             req.session.user ={
                 id: user.id,
                 name: user.first_name,
                 email: user.email,
                 role:"customer"
             }
-            return res.json({
+            return res.status(201).json({
                 message: "Login successful",
                 role: "customer",
                 user: { id: user.id, name: user.first_name, email: user.email, role: 'customer' }
             });
         }
-
+        let admin = await Admin.findOne({ where: { email } });
         // Check if the user is an admin
-        user = await Admin.findOne({ 
-            where: { email: Sequelize.literal(`email = '${email.replace(/'/g, "''")}'`) } 
-        });
-
-        if (user && await bcrypt.compare(password, user.password)) {
+        if (admin && checkpassword) {
             req.session.user ={
                 id: user.id,
                 name: user.first_name,
                 email: user.email,
                 role: "admin",
             };
-            return res.json({
+            return res.status(201).json({
                 message: "Login successful",
                 role: "admin",
                 user: { id: user.id, name: user.first_name, email: user.email, role: 'admin' }

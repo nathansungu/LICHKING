@@ -101,7 +101,7 @@ function addproduct() {
     })
     .then(async response => {
         const data = await response.json();
-        return { status: response.ok, data };
+        return { status: response.ok, data };S
     })
     .then(({ status, data }) => {
         if (status) {
