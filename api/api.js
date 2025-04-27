@@ -30,14 +30,14 @@ const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 
 //customer registration
-router.post("/register/customer", async (req, res, next) => {
+router.post("/register/customer", async (req, res) => {
     try {
         const { first_name, second_name, email,phone_no, password, confirmPassword} = req.body;
         if (!first_name || !second_name || !email || !phone_no|| !password || !confirmPassword) {
             return res.status(400).json({ message: "All fields are required" });
         }
         if (password !== confirmPassword) {
-            return res.status(400).json({ message: "Passwords do not match" });            
+            return res.status(400).json({ message: "Password don't match" });            
         }
         const hashedPassword = await bcrypt.hash(password, 10);
         const newCustomer = await Customer.create({
@@ -64,56 +64,79 @@ router.post("/register/customer", async (req, res, next) => {
         }
     }
 });
-
 //login
-router.post("/login", async (req, res, next) => {
+router.post("/login", async (req, res) => {
     try {
         const { email, password } = req.body;
+
         if (!email || !password) {
             return res.status(401).json({ message: "All fields are required " });
         }
 
-        // Check if the user is a customer
-        let user = await Customer.findOne({ 
-            where: { email } 
-        });
-        let bcryptpass = await bcrypt.hash(password, 10);
-        let checkpassword = await compare(bcryptpass, user.password);
-        if (user && checkpassword) {
-            req.session.user ={
-                id: user.id,
-                name: user.first_name,
-                email: user.email,
-                role:"customer"
-            }
-            return res.status(201).json({
-                message: "Login successful",
-                role: "customer",
-                user: { id: user.id, name: user.first_name, email: user.email, role: 'customer' }
-            });
-        }
+        // Check for customer first
+        let user = await Customer.findOne({ where: { email } });
         let admin = await Admin.findOne({ where: { email } });
-        // Check if the user is an admin
-        if (admin && checkpassword) {
-            req.session.user ={
-                id: user.id,
-                name: user.first_name,
-                email: user.email,
-                role: "admin",
-            };
-            return res.status(201).json({
-                message: "Login successful",
-                role: "admin",
-                user: { id: user.id, name: user.first_name, email: user.email, role: 'admin' }
-            });
-        }
+        if (user) {
+            const checkpassword = await bcrypt.compare(password, user.password);
 
-        // If neither, return invalid email or password
-        return res.status(401).json({ message: "Invalid email or password" });
+            // If password matches, set session and return user info
+            if (!checkpassword) {
+                return res.status(401).json({ message: "Invalid email or password" });
+            } else {
+                req.session.user = {
+                    id: user.id,
+                    name: user.first_name,
+                    email: user.email ,  
+                    role: "customer"     
+                };
+                return res.status(201).json({
+                    message: "Login successful",
+                    role: "customer",
+                    user: { id: user.id, name: user.first_name, email: user.email, role: "customer" },
+                });
+            } 
+        } else if (admin) {
+            // If not customer, check for admin
+            const adminpassword = await bcrypt.compare(password, admin.password);
+            if (adminpassword) {
+                req.session.user = {
+                    id: admin.id,
+                    name: admin.first_name,
+                    email: admin.email,
+                    role: "admin",
+                };
+                return res.status(201).json({
+                    message: "Login successful",
+                    role: "admin",
+                    user: { id: admin.id, name: admin.first_name, email: admin.email, role: "admin" },
+                });
+            } else {
+                return res.status(401).json({ message: "Invalid email or password" });
+            }
+        }
     } catch (error) {
-        next(error);
+        console.error(error);
+        return res.status(400).json({ message: "Error logging in. Contact customer care." });
     }
 });
+
+// profile path
+app.get("/profile", async (req, res) => {
+    if (!req.session.user) {
+        return res.status(401).json({ message: "Unauthorized" });
+    }
+    res.status(200).json({
+        message: "Hello, " + req.session.user.name,
+        user: req.session.user,
+    });
+});
+//logout path
+app.get("/logout", (req, res)=> {
+    req.session.destroy();
+    res.status(200).json({ message: "Logged out successfully" });
+});
+
+
 //forgot password
 // Generate a password reset token
 router.post('/password reset', async (req, res, next) => {
