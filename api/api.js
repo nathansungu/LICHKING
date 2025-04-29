@@ -1,5 +1,6 @@
 //import models file
 const Sequelize = require('sequelize');
+const path = require('path');
 const bcrypt = require("bcrypt");
 const{message} =require("statuses");
 //import the session configfiles
@@ -8,26 +9,31 @@ const express = require("express");
 const app = express();
 //use cors
 const cors = require('cors');
-app.use(cors());
+app.use(cors({
+    origin: 'http://127.0.0.1:5500',
+    credentials: true    
+}));
 app.use(sessionconfig);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-const router =express.Router();
+
 //initialize port number
 const port = process.env.PORT || 3000;
 //set the port usage
 
-app.use(router);
-
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);
 });
+const router =express.Router();
+app.use(router);
+
 
 // Models are already imported above
 //import models
 const {Customer,Admin, Products, Company,Orders, Order_items, Category } =require("../models/models");
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
+const { create } = require('domain');
 
 //customer registration
 router.post("/register/customer", async (req, res) => {
@@ -64,11 +70,14 @@ router.post("/register/customer", async (req, res) => {
         }
     }
 });
+
+
 //login
 router.post("/login", async (req, res) => {
     try {
-        const { email, password } = req.body;
-
+        const { email} = req.body;
+        //make passord a string
+        const password = String(req.body.password);
         if (!email || !password) {
             return res.status(401).json({ message: "All fields are required " });
         }
@@ -78,6 +87,8 @@ router.post("/login", async (req, res) => {
         let admin = await Admin.findOne({ where: { email } });
         if (user) {
             const checkpassword = await bcrypt.compare(password, user.password);
+            //console log all the user details
+            console.log("User details:", user.toJSON());
 
             // If password matches, set session and return user info
             if (!checkpassword) {
@@ -86,9 +97,18 @@ router.post("/login", async (req, res) => {
                 req.session.user = {
                     id: user.id,
                     name: user.first_name,
-                    email: user.email ,  
+                    email: user.email , 
+                    phone_no: user.phone_no, 
+                    createdAt: user.createdAt,
+                    updatedAt: user.updatedAt,
                     role: "customer"     
                 };
+                req.session.save(err => {
+                    if (err) {
+                        console.error('Session save error:', err);
+                        return res.status(500).json({ message: "Could not save session." });
+                    }
+                });
                 return res.status(201).json({
                     message: "Login successful",
                     role: "customer",
@@ -119,17 +139,26 @@ router.post("/login", async (req, res) => {
         return res.status(400).json({ message: "Error logging in. Contact customer care." });
     }
 });
+app.get('/debug-session', (req, res) => {
+    console.log('Session:', req.session);
+    res.json(req.session);
+});
 
 // profile path
-app.get("/profile", async (req, res) => {
+router.get("/customer/profile", async (req, res) => {
+         
     if (!req.session.user) {
-        return res.status(401).json({ message: "Unauthorized" });
+        return res.status(401).json({ message: "Unauthorized. login" });
     }
     res.status(200).json({
         message: "Hello, " + req.session.user.name,
         user: req.session.user,
     });
 });
+//push customer profile page    
+router.get("/customer", async (req, res) => {
+    res.sendFile(path.join(__dirname, '../frontend/customer_profile.html'));
+})
 //logout path
 app.get("/logout", (req, res)=> {
     req.session.destroy();
