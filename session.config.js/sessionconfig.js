@@ -6,20 +6,21 @@ const options = {
     port: 3306,
     user: "root", 
     password: "",
-    database: "bookstore"
+    database: "lichking"
 };
 
 const sessionStore = new MySQLStore(options);
 
 const sessionConfig = session({
-    secret: "123254", // Replace with a secure, random key
-    resave: false, // Avoid resaving unchanged sessions
+    secret: "1234", // Replace with a secure, random key
+    resave: false,
     saveUninitialized: false, // Do not save empty sessions
     store: sessionStore,
     cookie: {
         httpOnly: true, // Prevent client-side access to cookies
         secure: false, // Set to true if using HTTPS
-        maxAge: 24 * 60 * 60 * 1000, // Session expires after 1 day
+        sameSite: 'Lax', // Prevent CSRF attacks
+        maxAge: 24 * 60 * 60 * 10000, // Session expires after 1 day
     },
 });
 

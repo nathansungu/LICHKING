@@ -35,9 +35,9 @@ $Customers ="CREATE TABLE Customers
 first_name VARCHAR(30) NOT NULL,
 second_name VARCHAR(30) NOT NULL,
 phone_no VARCHAR(14) NOT NULL,
-password VARCHAR(50) NOT NULL,
+password VARCHAR(100) NOT NULL,
 email VARCHAR(50) NOT NULL,
-reg_date TIMESTAMP DEFAULT CURRENT_TIME ON UPDATE CURRENT_TIMESTAMP";
+reg_date TIMESTAMP DEFAULT CURRENT_TIME ON UPDATE CURRENT_TIMESTAMP)";
 //admin
 $admin = "CREATE TABLE Admin_users
 (id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -45,7 +45,7 @@ first_name VARCHAR(30) NOT NULL,
 second_name VARCHAR(30) NOT NULL,
 phone_no VARCHAR(30) NOT NULL,
 email VARCHAR(50) NOT NULL,
-password VARCHAR(50),
+password VARCHAR(100),
 reg_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP)";
 //products
 $Products = "CREATE TABLE Products(
@@ -72,6 +72,7 @@ order_id INT (6),
 product_id INT(6),
 price FLOAT(10),
 quantity INT(100))";
+
  //orders   
 $Orders = "CREATE TABLE Orders (
 id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,

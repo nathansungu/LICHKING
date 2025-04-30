@@ -24,8 +24,6 @@ const port = process.env.PORT || 3000;
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);
 });
-const router =express.Router();
-app.use(router);
 
 
 // Models are already imported above
@@ -36,7 +34,7 @@ const nodemailer = require('nodemailer');
 const { create } = require('domain');
 
 //customer registration
-router.post("/register/customer", async (req, res) => {
+app.post("/register/customer", async (req, res) => {
     try {
         const { first_name, second_name, email,phone_no, password, confirmPassword} = req.body;
         if (!first_name || !second_name || !email || !phone_no|| !password || !confirmPassword) {
@@ -73,7 +71,7 @@ router.post("/register/customer", async (req, res) => {
 
 
 //login
-router.post("/login", async (req, res) => {
+app.post("/login", async (req, res) => {
     try {
         const { email} = req.body;
         //make passord a string
@@ -87,9 +85,7 @@ router.post("/login", async (req, res) => {
         let admin = await Admin.findOne({ where: { email } });
         if (user) {
             const checkpassword = await bcrypt.compare(password, user.password);
-            //console log all the user details
-            console.log("User details:", user.toJSON());
-
+            
             // If password matches, set session and return user info
             if (!checkpassword) {
                 return res.status(401).json({ message: "Invalid email or password" });
@@ -109,6 +105,9 @@ router.post("/login", async (req, res) => {
                         return res.status(500).json({ message: "Could not save session." });
                     }
                 });
+                //console.log("Session data:", req.session.user);
+                console.log(req.session);
+
                 return res.status(201).json({
                     message: "Login successful",
                     role: "customer",
@@ -125,6 +124,13 @@ router.post("/login", async (req, res) => {
                     email: admin.email,
                     role: "admin",
                 };
+                // Save session
+                req.session.save(err => {
+                    if (err) {
+                        console.error('Session save error:', err);
+                        return res.status(500).json({ message: "Could not save session." });
+                    }
+                });
                 return res.status(201).json({
                     message: "Login successful",
                     role: "admin",
@@ -145,7 +151,7 @@ app.get('/debug-session', (req, res) => {
 });
 
 // profile path
-router.get("/customer/profile", async (req, res) => {
+app.get("/customer/profile", async (req, res) => {
          
     if (!req.session.user) {
         return res.status(401).json({ message: "Unauthorized. login" });
@@ -156,7 +162,7 @@ router.get("/customer/profile", async (req, res) => {
     });
 });
 //push customer profile page    
-router.get("/customer", async (req, res) => {
+app.get("/customer", async (req, res) => {
     res.sendFile(path.join(__dirname, '../frontend/customer_profile.html'));
 })
 //logout path
@@ -168,7 +174,7 @@ app.get("/logout", (req, res)=> {
 
 //forgot password
 // Generate a password reset token
-router.post('/password reset', async (req, res, next) => {
+app.post('/password reset', async (req, res, next) => {
     try {
         const { email } = req.body;
         if (!email) {
@@ -219,7 +225,7 @@ router.post('/password reset', async (req, res, next) => {
 });
 
 // Reset password using the token
-router.post('/reset-password', async (req, res, next) => {
+app.post('/reset-password', async (req, res, next) => {
     try {
         const { token, newPassword } = req.body;
         if (!token || !newPassword) {
@@ -250,7 +256,7 @@ router.post('/reset-password', async (req, res, next) => {
 
 
 //add a product
-router.post("/product/add", async (req, res, next)=>{
+app.post("/product/add", async (req, res, next)=>{
     try {
         const{name, image, company_id, category_id, price, stock,description}=req.body;
         if (!name|| !image|| !company_id || !category_id|| !price|| !stock|| !description) {
@@ -274,7 +280,7 @@ router.post("/product/add", async (req, res, next)=>{
 });
 
 //Get all products
-router.get("/product", async (req, res, next) => {
+app.get("/product", async (req, res, next) => {
     try {
         const products = await Products.findAll({
             attributes: ['name','image', 'price', 'stock', 'description'],
@@ -299,7 +305,7 @@ router.get("/product", async (req, res, next) => {
 });
 
 ///update a product
-router.put("/product/update", async(req,res) =>{
+app.put("/product/update", async(req,res) =>{
     const{name, company_id,category_id, price,stock}=req.body
     try {
         const searchProduct = await Books.findOne({where: {name}});
@@ -320,7 +326,7 @@ router.put("/product/update", async(req,res) =>{
     }
 });
 // delete product path
-router.delete("/product/delete", async(req, res) =>{
+app.delete("/product/delete", async(req, res) =>{
     const{ name}=req.body;
     try {
         if (!name) {
@@ -338,7 +344,7 @@ router.delete("/product/delete", async(req, res) =>{
     
 });
 //add books to cart
-router.post('/product/addtocart', async(req, res)=>{
+app.post('/product/addtocart', async(req, res)=>{
     const { customer_id, product_id, quantity } = req.body;
     try {
         //check if book id exists
@@ -379,7 +385,7 @@ router.post('/product/addtocart', async(req, res)=>{
     }
 });
 //view cart items
-router.get('/cart', async (req, res) => {
+app.get('/cart', async (req, res) => {
     const {customer_id}=req.body;
     if (!customer_id) {
         return res.status(400).json({ message: 'Valid customer ID is required' });
@@ -418,7 +424,7 @@ router.get('/cart', async (req, res) => {
 });
 //make order path
 // Place the order (complete the order)
-router.post('/placeorder', async (req, res) => {
+app.post('/placeorder', async (req, res) => {
     const {customer_id} = req.body;
   
     try {
@@ -471,7 +477,7 @@ router.post('/placeorder', async (req, res) => {
   
 //cancel an order
 //1. by admin
-router.post('/admin/cancel-order', async (req, res) => {
+app.post('/admin/cancel-order', async (req, res) => {
     const { order_id } = req.body;
         
     try {
@@ -489,7 +495,7 @@ router.post('/admin/cancel-order', async (req, res) => {
 });
 
 //2. by customer
-router.post('/customer/cancel-order', async (req, res) => {
+app.post('/customer/cancel-order', async (req, res) => {
     const { orderid, customer_id } = req.body;
     if (!orderid || !customer_id) {
         return res.status(400).json({ message: 'Order ID and customer ID are required' });
@@ -509,7 +515,7 @@ router.post('/customer/cancel-order', async (req, res) => {
     }
 });
 //update delivery status by id
-router.put('/order/update_delivery_status', async (req, res) => {
+app.put('/order/update_delivery_status', async (req, res) => {
     const { orderid, delivery_status } = req.body;
     if (!orderid || !delivery_status) {
         return res.status(400).json({ message: 'Order ID and delivery status are required' });
@@ -530,7 +536,7 @@ router.put('/order/update_delivery_status', async (req, res) => {
 });
 
 //check delivery status
-router.get('/order/delivery_status', async (req, res) => {
+app.get('/order/delivery_status', async (req, res) => {
     const {orderid , customer_id } = req.body;
 
     try {
@@ -549,7 +555,7 @@ router.get('/order/delivery_status', async (req, res) => {
 //path to create new admin
 //
 //
-router.post('/admin/register', async (req, res, next) => {
+app.post('/admin/register', async (req, res, next) => {
     try {
         const { first_name, second_name, email,phone_no, password } = req.body;
         if (!first_name || !second_name || !email || !phone_no || !password) {
@@ -577,7 +583,7 @@ router.post('/admin/register', async (req, res, next) => {
     }
 });
 // view all admins
-router.get('/admins', async ( req,res) => {
+app.get('/admins', async ( req,res) => {
     try {
         const admins = await Admin.findAll();
         if (!admins) return res.status(404).json({ message: 'No admins found' });
@@ -589,7 +595,7 @@ router.get('/admins', async ( req,res) => {
     }
 });
 // path to add company
-router.post('/company/add', async (req, res) => {
+app.post('/company/add', async (req, res) => {
     const { name , location , phone_no, email } = req.body;
 
     try {
@@ -611,7 +617,7 @@ router.post('/company/add', async (req, res) => {
     }
 });
 //get all company
-router.get('/company', async (req, res) => {
+app.get('/company', async (req, res) => {
     try {
         const company = await Company.findAll();
         if (!company) return res.status(404).json({ message: 'No company found' });
@@ -623,7 +629,7 @@ router.get('/company', async (req, res) => {
     }
 });
 //add category
-router.post('/category/add', async (req, res) =>{
+app.post('/category/add', async (req, res) =>{
     const{name, description}=req.body;
     if (!name) {
         return res.send(400).json({message: "Enter category name"})
@@ -644,7 +650,7 @@ router.post('/category/add', async (req, res) =>{
     }
 })
 //get all categories
-router.get('/category', async (req, res) =>{
+app.get('/category', async (req, res) =>{
     try {
         const category = await Category.findAll();
         if (!category) return res.status(404).json({message: 'No category found'});
@@ -656,6 +662,3 @@ router.get('/category', async (req, res) =>{
     }
 });
 
-
-//export routers
-module.exports=router;

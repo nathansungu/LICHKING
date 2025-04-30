@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LICHKING - Customer Profile</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* General Styling */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            background-color: #f4f4f4;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #222;
+            color: white;
+            padding: 10px 20px;
+        }
+        .logo img {
+            width: 50px;
+            height: auto;
+        }
+        .search input {
+            padding: 5px;
+            width: 250px;
+            border-radius: 4px;
+            border: none;
+        }
+        .search button {
+            padding: 5px 10px;
+            border-radius: 4px;
+            background-color: #333;
+            color: white;
+            border: none;
+        }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            padding: 10px;
+            margin: 0 10px;
+            transition: background-color 0.3s;
+        }
+        .navbar a:hover {
+            background-color: #555;
+        }
+        .main-container {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px;
+            background-color: white;
+            margin: 20px auto;
+            border-radius: 8px;
+            width: 80%;
+        }
+        .main-container > div {
+            flex: 1;
+            margin: 10px;
+        }
+        footer {
+            background-color: #222;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+        footer a {
+            color: white;
+            margin: 0 10px;
+            text-decoration: none;
+        }
+        .footer-social a {
+            margin: 0 15px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+                width: 90%;
+            }
+            .search input {
+                width: 80%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Bar -->
+    <header>
+        <div class="logo">
+            <img src="images/logo.png" alt="LICHKING Logo">
+        </div>
+        <div class="navbar">
+            <a href="/customer/profile">Profile</a>
+            <a href="/customer/orders">Orders</a>
+            <a href="/customer/cart">Cart</a>
+            <a href="/customer/wishlist">Wishlist</a>
+            <a href="/customer/settings">Settings</a>
+            <a href="/contact">Contact</a>
+        </div>
+        <div class="search">
+            <input type="text" placeholder="Search for products">
+            <button>Search</button>
+        </div>
+    </header>
+    <div style="display: none;" id="notification"></div>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <div class="profile-info">
+            <h2>Hello , <span id="customer_first_name"></span>. </h2>
+            <p>Email: <span id="customer_email"></span></p>
+        </div>
+        <div class="account-settings">
+            <h3>Your Settings</h3>
+            <ul>
+                <li><a href="/customer/change-password">Change Password</a></li>
+                <li><a href="/customer/update-details">Update Profile</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-about">
+                <h3>About LICHKING</h3>
+                <p>LICHKING is your one-stop shop for the latest fashion trends, offering a wide range of quality products at affordable prices.</p>
+            </div>
+            <div class="footer-social">
+                <h3>Follow Us</h3>
+                <a href="#"><img src="images/facebook.png" alt="Facebook"></a>
+                <a href="#"><img src="images/twitter.png" alt="Twitter"></a>
+                <a href="#"><img src="images/instagram.png" alt="Instagram"></a>
+                <a href="#"><img src="images/linkedin.png" alt="LinkedIn"></a>
+            </div>
+        </div>
+        <p>&copy; 2023 LICHKING. All rights reserved.</p>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="/frontend/authentication/authentication.js"></script>
+</body>
+</html>
